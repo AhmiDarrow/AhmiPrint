@@ -28,7 +28,62 @@ HOLES = {
     "zero": 3,  # the slashed zero splits its counter in two
     "Q": 2,
     "eight": 3,
+    "degree": 2,
+    "ring": 2,
 }
+
+# Composed letters whose mark keeps its own hole: (letter, base, extra contours).
+MARK_HOLES = [
+    ("aring", "a", 2),  # a separate ring: its outline and its hole
+    ("uring", "u", 2),
+    ("Aring", "A", 1),  # the ring sits on the apex, so only its hole is new
+    ("Uring", "U", 2),
+]
+
+# Spaces: empty glyphs with these advances (design units).
+SPACES = {
+    0x0020: 6.5,
+    0x00A0: 6.5,
+    0x2007: 17.0,  # figure space: one figure
+    0x2008: 5.2,   # punctuation space: one period
+    0x2009: 4.8,   # thin space: a fifth of an em
+    0x200A: 2.4,   # hair space: a tenth of an em
+    0x202F: 4.8,   # narrow no-break space
+}
+
+# Each group shares one advance, so numbers line up in columns.
+TABULAR = {
+    "figures": [0x30 + i for i in range(10)] + [0x2007, 0x2012],
+    "superior figures": [0xB9, 0xB2, 0xB3],
+    "fractions": [0xBC, 0xBD, 0xBE],
+}
+
+
+def target_set() -> set[int]:
+    """Every character FreeSpeak needs from each weight (fonts/TARGET.md)."""
+    s: set[int] = set()
+    s |= set(range(0x20, 0x7F))                      # Basic Latin
+    s |= set(range(0xA0, 0x100))                     # Latin-1 Supplement
+    s |= set(range(0x100, 0x180))                    # Latin Extended-A
+    s |= {0x192, 0x218, 0x219, 0x21A, 0x21B}         # f hook, Romanian comma below
+    s |= {0x2C6, 0x2C7} | set(range(0x2D8, 0x2DE))   # spacing modifiers
+    s |= {0x2010, 0x2011, 0x2012, 0x2013, 0x2014, 0x2015, 0x2018, 0x2019, 0x201A,
+          0x201C, 0x201D, 0x201E, 0x2020, 0x2021, 0x2022, 0x2026, 0x2030, 0x2032,
+          0x2033, 0x2039, 0x203A, 0x203C, 0x2044}
+    s |= set(SPACES)
+    s |= {0x20AC, 0x20B9, 0x20BD, 0x20BA, 0x20A9, 0x20AA, 0x20AB, 0x20B1, 0x20B4,
+          0x20B8, 0x20BF}                            # currency
+    s |= {0x2122, 0x2116}                            # letterlike
+    s |= set(range(0x2190, 0x2196)) | {0x21E7}       # arrows
+    s |= {0x2212, 0x221E, 0x221A, 0x2248, 0x2260, 0x2264, 0x2265}
+    s |= {0x25FB, 0x25B2, 0x25BC, 0x25BA, 0x25C4, 0x2713, 0x2717, 0x25CF, 0x25CB}
+    s |= set(range(0x23F4, 0x23F8))
+    s |= {0x386, 0x38C} | set(range(0x388, 0x38B)) | set(range(0x38E, 0x3A2))
+    s |= set(range(0x3A3, 0x3CF))                    # Greek
+    s |= set(range(0x400, 0x460))                    # Cyrillic
+    s |= {0x490, 0x491, 0x492, 0x493, 0x49A, 0x49B, 0x4A2, 0x4A3, 0x4AE, 0x4AF,
+          0x4B0, 0x4B1, 0x4BA, 0x4BB, 0x4D8, 0x4D9, 0x4E8, 0x4E9}
+    return s
 
 
 class AreaPen(BasePen):
@@ -87,31 +142,38 @@ def zero_length_segments(font, glyph_name: str) -> bool:
 
 def check_font(font, style: str, strokes) -> None:
     cmap = font.getBestCmap()
-    if set(cmap) != set(range(32, 127)) | {0x00A0}:
-        fail(f"{style} cmap is {sorted(cmap)[:8]}... ({len(cmap)} entries)")
-    if cmap[0x00A0] != cmap[0x0020]:
-        fail(f"{style} no-break space does not use the space glyph")
-    if len(font.getGlyphOrder()) != 96:
-        fail(f"{style} has {len(font.getGlyphOrder())} glyphs, expected 96")
+    missing = sorted(target_set() - set(cmap))
+    if missing:
+        fail(f"{style} is missing {len(missing)} target characters: "
+             + " ".join(f"U+{cp:04X}" for cp in missing[:12]))
+    if set(cmap) != {cp for cp, _, _ in strokes}:
+        fail(f"{style} cmap does not match the stroke source")
+    if len(font.getGlyphOrder()) != len(strokes) + 1:
+        fail(f"{style} has {len(font.getGlyphOrder())} glyphs, expected {len(strokes) + 1}")
 
     glyf = font["glyf"]
     hmtx = font["hmtx"]
+    ascent = font["hhea"].ascent
+    descent = font["hhea"].descent
     for cp, advance, commands in strokes:
         name = cmap[cp]
         width, lsb = hmtx[name]
         if width != build.fu(advance):
             fail(f"{style} {name} advance {width} != {build.fu(advance)}")
         glyph = glyf[name]
-        if commands:
-            if glyph.numberOfContours <= 0:
-                fail(f"{style} {name} has no outline")
-            if lsb != int(glyph.xMin):
-                fail(f"{style} {name} lsb {lsb} != xMin {glyph.xMin}")
-        else:
-            if glyph.numberOfContours != 0:
-                fail(f"{style} space is not empty")
-            if width != build.fu(6.5) or lsb != 0:
-                fail(f"{style} space metrics {width}, {lsb}")
+        if cp in SPACES:
+            if commands or glyph.numberOfContours != 0:
+                fail(f"{style} space U+{cp:04X} is not empty")
+            if width != build.fu(SPACES[cp]) or lsb != 0:
+                fail(f"{style} space U+{cp:04X} metrics {width}, {lsb}")
+            continue
+        if not commands or glyph.numberOfContours <= 0:
+            fail(f"{style} {name} (U+{cp:04X}) has no outline")
+        if lsb != int(glyph.xMin):
+            fail(f"{style} {name} lsb {lsb} != xMin {glyph.xMin}")
+        # Marks included: nothing may reach past the line box and be clipped.
+        if glyph.yMax > ascent or glyph.yMin < descent:
+            fail(f"{style} {name} ({glyph.yMin}..{glyph.yMax}) leaves the line box")
 
     for name, contours in HOLES.items():
         count = glyf[name].numberOfContours
@@ -122,6 +184,11 @@ def check_font(font, style: str, strokes) -> None:
         signs = {1 if area > 0 else -1 for area in pen.areas if abs(area) > 1}
         if signs != {1, -1}:
             fail(f"{style} {name} contours do not wind as a hole ({pen.areas})")
+
+    for name, base, extra in MARK_HOLES:
+        want = glyf[base].numberOfContours + extra
+        if glyf[name].numberOfContours != want:
+            fail(f"{style} {name} has {glyf[name].numberOfContours} contours, expected {want}")
 
     for name in font.getGlyphOrder():
         if zero_length_segments(font, name):
@@ -164,8 +231,6 @@ def check_font(font, style: str, strokes) -> None:
 
 def main() -> int:
     strokes = build.parse()
-    if [cp for cp, _, _ in strokes] != list(range(32, 127)):
-        fail("stroke source is not U+0020..U+007E in order")
 
     loaded = {}
     for style in STYLES:
@@ -192,17 +257,22 @@ def main() -> int:
     if regular["post"].underlineThickness != bold["post"].underlineThickness:
         fail("underline thickness differs between weights")
 
-    # Digits share one advance, taken from the stroke file.
+    # Figures share one advance, taken from the stroke file, in both weights.
     digit_width = build.fu(next(adv for cp, adv, _ in strokes if cp == 48))
-    for style, font in loaded.items():
-        cmap = font.getBestCmap()
-        widths = {font["hmtx"][cmap[cp]][0] for cp in range(48, 58)}
-        if widths != {digit_width}:
-            fail(f"{style} digits are not tabular ({widths})")
+    for group, codes in TABULAR.items():
+        for style, font in loaded.items():
+            cmap = font.getBestCmap()
+            widths = {font["hmtx"][cmap[cp]][0] for cp in codes}
+            if len(widths) != 1:
+                fail(f"{style} {group} are not tabular ({sorted(widths)})")
+            if group == "figures" and widths != {digit_width}:
+                fail(f"{style} figures are {widths}, the stroke file says {digit_width}")
 
     print(
-        f"ok: {len(strokes)} characters, U+0020..U+007E, "
-        f"plus U+00A0 on the space glyph, Regular and Bold"
+        f"ok: {len(strokes)} characters in Regular and Bold, all {len(target_set())} "
+        f"target characters, every non-space glyph drawn, figures tabular; "
+        f"unitsPerEm {regular['head'].unitsPerEm}, ascent {regular['hhea'].ascent}, "
+        f"descent {regular['hhea'].descent}"
     )
     return 0
 

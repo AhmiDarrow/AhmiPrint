@@ -14,6 +14,7 @@ on the 24-unit grid. That grid is the em square (unitsPerEm 1000).
 from __future__ import annotations
 
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -32,7 +33,7 @@ SOURCE = ROOT / "source" / "ahmi-print.strokes"
 OUT = ROOT / "fonts"
 
 FAMILY = "AhmiPrint"
-VERSION = "1.000"
+VERSION = "1.100"
 COPYRIGHT = "Copyright 2026 Ahmi Darrow"
 DESIGNER = "Ahmi Darrow"
 VENDOR_URL = "https://github.com/AhmiDarrow/AhmiPrint"
@@ -73,9 +74,56 @@ def fu(v: float) -> int:
     return -int(math.floor(-scaled + 0.5))
 
 
+def parse_code(token: str) -> int:
+    """A character code: decimal (65) or hexadecimal with a U+ prefix (U+0041)."""
+    if token.upper().startswith("U+"):
+        return int(token[2:], 16)
+    return int(token)
+
+
+def _transform(cmd, dx: float, dy: float, sx: float, sy: float):
+    """One drawing command moved by (dx, dy) after scaling by (sx, sy).
+
+    A negative scale mirrors. Stroke weight is never scaled: it comes from the
+    renderer, so a scaled drawing keeps the face's own stroke.
+    """
+    def pt(x, y):
+        return (x * sx + dx, y * sy + dy)
+
+    kind = cmd[0]
+    if kind == "L":
+        return ("L", *pt(cmd[1], cmd[2]), *pt(cmd[3], cmd[4]))
+    if kind == "Q":
+        return ("Q", *pt(cmd[1], cmd[2]), *pt(cmd[3], cmd[4]), *pt(cmd[5], cmd[6]))
+    if kind == "D":
+        return ("D", *pt(cmd[1], cmd[2]))
+    if kind in ("A", "E"):
+        cx, cy = pt(cmd[1], cmd[2])
+        rx, ry = abs(cmd[3] * sx), abs(cmd[4] * sy)
+        if kind == "E":
+            return ("E", cx, cy, rx, ry)
+        a0, a1 = cmd[5], cmd[6]
+        if sx < 0 and sy < 0:
+            a0, a1 = a0 + 180.0, a1 + 180.0
+        elif sx < 0:
+            a0, a1 = 180.0 - a0, 180.0 - a1
+        elif sy < 0:
+            a0, a1 = -a0, -a1
+        return ("A", cx, cy, rx, ry, a0, a1)
+    if kind == "P":
+        out = []
+        for i in range(1, len(cmd), 2):
+            out.extend(pt(cmd[i], cmd[i + 1]))
+        return ("P", *out)
+    raise ValueError(f"unknown command {kind}")
+
+
 def parse(path: Path = SOURCE) -> list[tuple[int, float, list]]:
-    """Return [(codepoint, advance, commands)] in file order."""
-    glyphs: list[tuple[int, float, list]] = []
+    """Return [(codepoint, advance, commands)] in file order.
+
+    `use` lines are expanded here, so every glyph comes back as plain strokes.
+    """
+    raw_glyphs: list[tuple[int, float, list]] = []
     current: list | None = None
     seen: set[int] = set()
 
@@ -87,15 +135,26 @@ def parse(path: Path = SOURCE) -> list[tuple[int, float, list]]:
             parts = line.split()
             if len(parts) != 3 or not parts[2].startswith("adv="):
                 raise ValueError(f"line {n}: expected 'glyph <code> adv=<units>', got {raw!r}")
-            cp = int(parts[1])
+            cp = parse_code(parts[1])
             if cp in seen:
                 raise ValueError(f"line {n}: U+{cp:04X} defined twice")
             seen.add(cp)
             current = []
-            glyphs.append((cp, float(parts[2][4:]), current))
+            raw_glyphs.append((cp, float(parts[2][4:]), current))
             continue
         if current is None:
             raise ValueError(f"line {n}: command before any glyph")
+        if line.startswith("use"):
+            parts = line.split()
+            if not 2 <= len(parts) <= 4:
+                raise ValueError(f"line {n}: expected 'use <code> [dx,dy] [sx,sy]', got {raw!r}")
+            ref = parse_code(parts[1])
+            move = [float(t) for t in parts[2].split(",")] if len(parts) > 2 else [0.0, 0.0]
+            scale = [float(t) for t in parts[3].split(",")] if len(parts) > 3 else [1.0, 1.0]
+            if len(move) != 2 or len(scale) != 2:
+                raise ValueError(f"line {n}: bad use {raw!r}")
+            current.append(("use", ref, *move, *scale, n))
+            continue
         kind = line[0]
         nums = [float(t) for t in line[1:].replace(",", " ").split()]
         if kind == "L" and len(nums) == 4:
@@ -106,13 +165,38 @@ def parse(path: Path = SOURCE) -> list[tuple[int, float, list]]:
             current.append(("Q", *nums))
         elif kind == "D" and len(nums) == 2:
             current.append(("D", *nums))
+        elif kind == "E" and len(nums) == 4:
+            current.append(("E", *nums))
+        elif kind == "P" and len(nums) >= 6 and len(nums) % 2 == 0:
+            current.append(("P", *nums))
         else:
             raise ValueError(f"line {n}: bad command {raw!r}")
 
-    expected = list(range(32, 127))
-    got = [cp for cp, _, _ in glyphs]
-    if got != expected:
-        raise ValueError(f"expected U+0020..U+007E in order, got {got[:8]}... ({len(got)} glyphs)")
+    by_code = {cp: commands for cp, _, commands in raw_glyphs}
+    resolved: dict[int, list] = {}
+
+    def expand(cp: int, stack: tuple[int, ...]) -> list:
+        if cp in resolved:
+            return resolved[cp]
+        if cp in stack:
+            raise ValueError(f"use loop: {' -> '.join(f'U+{c:04X}' for c in stack + (cp,))}")
+        if cp not in by_code:
+            raise ValueError(f"use of U+{cp:04X}, which is not in the source")
+        flat = []
+        for cmd in by_code[cp]:
+            if cmd[0] != "use":
+                flat.append(cmd)
+                continue
+            _, ref, dx, dy, sx, sy, _line = cmd
+            for sub in expand(ref, stack + (cp,)):
+                flat.append(_transform(sub, dx, dy, sx, sy))
+        resolved[cp] = flat
+        return flat
+
+    glyphs = [(cp, adv, expand(cp, ())) for cp, adv, _ in raw_glyphs]
+    missing = sorted(set(range(32, 127)) - {cp for cp, _, _ in glyphs})
+    if missing:
+        raise ValueError(f"Basic Latin is incomplete, missing {[f'U+{c:04X}' for c in missing][:8]}")
     return glyphs
 
 
@@ -187,6 +271,24 @@ def _add_commands(center, dots, commands, weight: float) -> tuple[bool, bool]:
         elif kind == "D":
             _, x, y = cmd
             _add_arc(dots, x, y, radius, radius, 0, 360)
+            has_dots = True
+        elif kind == "E":
+            # Filled ellipse: the inside is ink, and the stroke round its edge
+            # spreads it like any other line.
+            _, cx, cy, rx, ry = cmd
+            _add_arc(center, cx, cy, rx, ry, 0, 360)
+            _add_arc(dots, cx, cy, rx, ry, 0, 360)
+            has_center = True
+            has_dots = True
+        elif kind == "P":
+            # Filled polygon, its edge stroked with round joins.
+            pts = [(cmd[i] * SCALE, cmd[i + 1] * SCALE) for i in range(1, len(cmd), 2)]
+            for target in (center, dots):
+                target.moveTo(*pts[0])
+                for p in pts[1:]:
+                    target.lineTo(*p)
+                target.close()
+            has_center = True
             has_dots = True
         else:
             raise ValueError(f"unknown command {kind}")
@@ -326,6 +428,17 @@ def _dedupe_contour(points, flags):
         kept_p.pop()
         kept_f.pop()
     start = next((i for i, flag in enumerate(kept_f) if flag & 1), None)
+    if start is None and len(kept_p) >= 2:
+        # A small circle can come back from cu2qu as off-curve points only,
+        # with every on-curve point implied. Make the implied points explicit
+        # instead of losing the contour (and the hole it draws).
+        pts, flg = [], []
+        for i, (x0, y0) in enumerate(kept_p):
+            x1, y1 = kept_p[(i + 1) % len(kept_p)]
+            pts += [(x0, y0), (otRound((x0 + x1) / 2), otRound((y0 + y1) / 2))]
+            flg += [kept_f[i], kept_f[i] | 1]
+        kept_p, kept_f = pts, flg
+        start = 1
     if start is None or len(kept_p) < 3:
         return [], []
     if start:
@@ -387,6 +500,14 @@ def glyph_from_path(path) -> tuple[object, int]:
     return glyph, int(glyph.xMin)
 
 
+def glyph_name(cp: int) -> str:
+    """Adobe glyph list name where it is a plain name, else uniXXXX."""
+    name = UV2AGL.get(cp)
+    if not name or name.startswith("afii") or re.match(r"^(H|SF)\d", name):
+        return f"uni{cp:04X}"
+    return name
+
+
 def build_weight(weight_name: str, glyphs) -> tuple[object, int, int]:
     """Return (TTFont, yMin, yMax) for one weight. Vertical metrics are filled later."""
     weight = WEIGHTS[weight_name]
@@ -412,14 +533,14 @@ def build_weight(weight_name: str, glyphs) -> tuple[object, int, int]:
 
     add(".notdef", NOTDEF, NOTDEF_ADV)
     for cp, advance, commands in glyphs:
-        name = UV2AGL.get(cp, f"uni{cp:04X}")
+        name = glyph_name(cp)
         if name in glyf:
             raise ValueError(f"duplicate glyph name {name}")
         order.append(name)
         cmap[cp] = name
         add(name, commands, advance)
-    # U+00A0 shares the space glyph. The strokes file has no separate drawing for it.
-    cmap[0x00A0] = cmap[0x0020]
+    # Without its own drawing, U+00A0 shares the space glyph.
+    cmap.setdefault(0x00A0, cmap[0x0020])
 
     ink = [g for g in glyf.values() if g.numberOfContours]
     y_min = min(int(g.yMin) for g in ink)
@@ -488,6 +609,7 @@ def build_weight(weight_name: str, glyphs) -> tuple[object, int, int]:
         usMaxContext=0,
     )
     fb.font["OS/2"].recalcCodePageRanges(fb.font)
+    fb.font["OS/2"].recalcUnicodeRanges(fb.font)
     # One underline for the family. It matches the Regular stroke.
     fb.setupPost(
         underlinePosition=fu(-1.5),
@@ -495,7 +617,7 @@ def build_weight(weight_name: str, glyphs) -> tuple[object, int, int]:
         isFixedPitch=0,
     )
     fb.font["head"].macStyle = 1 if is_bold else 0
-    fb.font["head"].fontRevision = 1.0
+    fb.font["head"].fontRevision = float(VERSION)
 
     # Windows names only. Platform 1 (Mac) records are obsolete.
     fb.font["name"].names = [rec for rec in fb.font["name"].names if rec.platformID != 1]
