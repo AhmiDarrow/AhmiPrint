@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.110 — 2026-11-16
+
+Sharper on screen, an OpenType/CFF version, and cleaner joins. The font's own version string is 1.110. Advances, metrics and coverage are unchanged.
+
+- The `.ttf` and `.woff2` are now hinted with ttfautohint (strong stem snapping in grayscale, GDI and DirectWrite modes) and their gasp table allows grid-fitting. Before, they were unhinted, which made small sizes look soft
+- New `.otf` files for both weights: the same outlines as CFF, with PostScript hints from otfautohint; alignment zones and standard stems are measured from the font's own ink
+- Redrawn where strokes did not meet or crowded each other: 2 and ? (the bowl now runs straight into the diagonal or stem), 5 (upright stem, smooth shoulder, open tail so it cannot read as 6), & (rebuilt: closed loop, leg to the baseline, open bowl), @ (smaller inner a, tail joins the ring), 3 and G (strokes meet exactly), e (the bowl starts at the end of the bar), and the straight double quote; ² ³ ½ ¿ are built from those glyphs and follow them (marks further apart)
+- `build.py` needs `ttfautohint-py` and `afdko` in addition to the previous packages
+
 ## 1.101 — 2026-11-15
 
 The font's own version string is 1.101. The outlines and advances are the same as in 1.100; only the vertical metrics change.
