@@ -40,6 +40,9 @@ MARK_HOLES = [
     ("Uring", "U", 2),
 ]
 
+# The line spacing of 1.000, kept in every later version (font units).
+LINE_1000 = {"ascent": 1038, "descent": -329, "lineGap": 0}
+
 # Spaces: empty glyphs with these advances (design units).
 SPACES = {
     0x0020: 6.5,
@@ -153,8 +156,8 @@ def check_font(font, style: str, strokes) -> None:
 
     glyf = font["glyf"]
     hmtx = font["hmtx"]
-    ascent = font["hhea"].ascent
-    descent = font["hhea"].descent
+    win_ascent = font["OS/2"].usWinAscent
+    win_descent = font["OS/2"].usWinDescent
     for cp, advance, commands in strokes:
         name = cmap[cp]
         width, lsb = hmtx[name]
@@ -171,9 +174,10 @@ def check_font(font, style: str, strokes) -> None:
             fail(f"{style} {name} (U+{cp:04X}) has no outline")
         if lsb != int(glyph.xMin):
             fail(f"{style} {name} lsb {lsb} != xMin {glyph.xMin}")
-        # Marks included: nothing may reach past the line box and be clipped.
-        if glyph.yMax > ascent or glyph.yMin < descent:
-            fail(f"{style} {name} ({glyph.yMin}..{glyph.yMax}) leaves the line box")
+        # Marks included: the usWin metrics cover every glyph so Windows never
+        # clips one. Accents on capitals may rise above the hhea ascent.
+        if glyph.yMax > win_ascent or -glyph.yMin > win_descent:
+            fail(f"{style} {name} ({glyph.yMin}..{glyph.yMax}) is outside usWin {win_ascent}/{win_descent}")
 
     for name, contours in HOLES.items():
         count = glyf[name].numberOfContours
@@ -209,6 +213,22 @@ def check_font(font, style: str, strokes) -> None:
         fail(f"{style} still has Mac name records")
 
     os2 = font["OS/2"]
+    # Line spacing stays as in 1.000: hhea and typo metrics are fixed, and
+    # USE_TYPO_METRICS tells renderers to use the typo values.
+    hhea = font["hhea"]
+    line = {
+        "hhea.ascent": (hhea.ascent, LINE_1000["ascent"]),
+        "hhea.descent": (hhea.descent, LINE_1000["descent"]),
+        "hhea.lineGap": (hhea.lineGap, LINE_1000["lineGap"]),
+        "OS/2.sTypoAscender": (os2.sTypoAscender, LINE_1000["ascent"]),
+        "OS/2.sTypoDescender": (os2.sTypoDescender, LINE_1000["descent"]),
+        "OS/2.sTypoLineGap": (os2.sTypoLineGap, LINE_1000["lineGap"]),
+    }
+    for field, (got, want) in line.items():
+        if got != want:
+            fail(f"{style} {field} is {got}, expected the 1.000 value {want}")
+    if not os2.fsSelection & 0x80:
+        fail(f"{style} USE_TYPO_METRICS is not set")
     if os2.fsType != 0:
         fail(f"{style} fsType is {os2.fsType}, expected 0")
     expect_weight = 700 if style == "Bold" else 400
@@ -272,7 +292,8 @@ def main() -> int:
         f"ok: {len(strokes)} characters in Regular and Bold, all {len(target_set())} "
         f"target characters, every non-space glyph drawn, figures tabular; "
         f"unitsPerEm {regular['head'].unitsPerEm}, ascent {regular['hhea'].ascent}, "
-        f"descent {regular['hhea'].descent}"
+        f"descent {regular['hhea'].descent}, usWin {regular['OS/2'].usWinAscent}/"
+        f"{regular['OS/2'].usWinDescent}"
     )
     return 0
 

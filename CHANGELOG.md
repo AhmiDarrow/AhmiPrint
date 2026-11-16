@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.101 — 2026-11-15
+
+The font's own version string is 1.101. The outlines and advances are the same as in 1.100; only the vertical metrics change.
+
+- Line spacing goes back to the 1.000 values: hhea and typo ascent 1038, descent -329, line gap 0, with USE_TYPO_METRICS set. Lines set in AhmiPrint are as tall as in 1.000 again. Marks over capitals may rise above the ascent, as in most fonts
+- usWinAscent 1152 and usWinDescent 349 cover every glyph, so Windows never clips the marks over capitals or the commas below
+- `check.py` checks that the hhea and typo metrics equal the 1.000 values in both weights and that the usWin metrics cover every glyph, instead of requiring every glyph inside the line box
+
 ## 1.100 — 2026-11-15
 
 The font's own version string is 1.100.

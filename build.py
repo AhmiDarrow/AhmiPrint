@@ -33,7 +33,7 @@ SOURCE = ROOT / "source" / "ahmi-print.strokes"
 OUT = ROOT / "fonts"
 
 FAMILY = "AhmiPrint"
-VERSION = "1.100"
+VERSION = "1.101"
 COPYRIGHT = "Copyright 2026 Ahmi Darrow"
 DESIGNER = "Ahmi Darrow"
 VENDOR_URL = "https://github.com/AhmiDarrow/AhmiPrint"
@@ -637,14 +637,21 @@ def build_weight(weight_name: str, glyphs) -> tuple[object, int, int]:
     return fb.font, y_min, y_max
 
 
+# Line spacing, fixed at the 1.000 values. Accents on capitals may rise
+# above it, as in most fonts; usWin covers them.
+LINE_ASCENT = 1038
+LINE_DESCENT = -329
+
+
 def apply_family_metrics(fonts: dict[str, object], bounds: dict[str, tuple[int, int]]) -> None:
-    """One line box for both weights, tall enough that no glyph is clipped."""
+    """One line box for both weights: hhea and typo give the line spacing,
+    usWin covers every glyph so Windows never clips one."""
     y_min = min(b[0] for b in bounds.values())
     y_max = max(b[1] for b in bounds.values())
-    typo_asc = max(fu(ASCENDER), y_max)
-    typo_desc = min(fu(DESCENDER), y_min)
-    win_asc = y_max
-    win_desc = -y_min
+    typo_asc = LINE_ASCENT
+    typo_desc = LINE_DESCENT
+    win_asc = max(y_max, LINE_ASCENT)
+    win_desc = max(-y_min, -LINE_DESCENT)
     for font in fonts.values():
         font["hhea"].ascent = typo_asc
         font["hhea"].descent = typo_desc
