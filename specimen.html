@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>AhmiPrint specimen</title>
+<style>
+  @font-face { font-family: "AhmiPrint"; src: url("fonts/AhmiPrint-Regular.woff2") format("woff2"); font-weight: 400; }
+  @font-face { font-family: "AhmiPrint"; src: url("fonts/AhmiPrint-Bold.woff2") format("woff2"); font-weight: 700; }
+  body { margin: 0; padding: 28px 32px; width: 1136px; background: #ece7dc; color: #1a1816; font-family: "AhmiPrint", serif; }
+  h1 { margin: 0 0 4px; font-size: 64px; line-height: 1.2; font-weight: 700; }
+  p { margin: 0 0 20px; line-height: 1.4; }
+  .note { margin: 0 0 6px; color: #6d6558; font: 13px/1.4 system-ui, sans-serif; }
+  .bold { font-weight: 700; }
+  .cols { columns: 3; column-gap: 28px; font-size: 14px; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <h1>AhmiPrint</h1>
+  <p style="font-size:24px">A typewriter and newspaper slab serif.</p>
+
+  <div class="note">Bold, 36px</div>
+  <p class="bold" style="font-size:36px">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789<br>!"#$%&amp;'()*+,-./:;&lt;=&gt;?@[\]^_`{|}~</p>
+
+  <div class="note">Regular, 36px</div>
+  <p style="font-size:36px">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789<br>!"#$%&amp;'()*+,-./:;&lt;=&gt;?@[\]^_`{|}~</p>
+
+  <div class="note">Bold headline and Regular body copy, 14px in columns</div>
+  <p class="bold" style="font-size:40px">Sixty degrees, every day of the year</p>
+  <div class="cols">
+    <p>SPRINGFIELD - The jeep was full by ten, which is how you know the county has given up on the outdoors. The cave north of town is the only place this week where a person can sit down and stop sweating on purpose.</p>
+    <p>The rock stays about sixty degrees. The tour is the same one families have taken for years: lights, a guide, a road that should not be underground and is.</p>
+    <p>0614 S7 at rest, NE corner. Did not move in a 4 hr watch. 0615 Cam 2 tape: S7 at glass 0312, NE corner 0313. Nothing between frames.</p>
+  </div>
+</body>
+</html>
