@@ -3,7 +3,7 @@
 AhmiPrint is a typewriter and newspaper slab serif in Regular and Bold.
 It is drawn as strokes with round, ink-spread terminals and slab serifs, like a typewriter. Its proportional widths, tabular figures and large x-height come from newspaper text faces, so it stays readable at small sizes.
 
-Version 1.100. The first public release is [v1.0.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.0.0).
+Version 1.101. The first public release is [v1.0.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.0.0).
 
 ![AhmiPrint specimen](specimen.png)
 
@@ -56,7 +56,7 @@ The zip on the [release](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1
 
 Accented letters are composed. Each mark (acute, grave, circumflex, caron, breve, dot, ring, tilde, macron, diaeresis, double acute, cedilla, ogonek) is drawn once as its spacing character, and a letter is its base plus the mark, written as two `use` lines in the stroke file. Lowercase letters take the mark as drawn; capitals take it squashed to half height so it sits low over the cap. Greek and Cyrillic letters that look like Latin ones use the Latin drawing.
 
-The drawing grid is 24 units tall: baseline 0, x-height 14, cap height 20, ascender 21, descender -6. The em is 1000 units. The line box is ascent 1152 and descent 349, tall enough for the marks over capitals. Regular is stroke weight 2.6 and Bold is 3.8, both with round caps and round joins. Slab serifs are strokes of the same weight as the stems. Letters are proportional. The zero is slashed, and every figure, the figure space and the figure dash have the same width so columns of numbers line up.
+The drawing grid is 24 units tall: baseline 0, x-height 14, cap height 20, ascender 21, descender -6. The em is 1000 units. Line spacing is the same as in 1.000 and shared by both weights: ascent 1038, descent -329, no line gap, in both the hhea and the typo metrics, with USE_TYPO_METRICS set. Marks over capitals may rise above that ascent, as in most fonts. The Windows metrics (usWinAscent 1152, usWinDescent 349) cover every glyph, so nothing is clipped. Regular is stroke weight 2.6 and Bold is 3.8, both with round caps and round joins. Slab serifs are strokes of the same weight as the stems. Letters are proportional. The zero is slashed, and every figure, the figure space and the figure dash have the same width so columns of numbers line up.
 
 ## Changing a letter
 
