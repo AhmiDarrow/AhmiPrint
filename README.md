@@ -3,7 +3,7 @@
 AhmiPrint is a typewriter and newspaper slab serif in Regular and Bold.
 It is drawn as strokes with round, ink-spread terminals and slab serifs, like a typewriter. Its proportional widths, tabular figures and large x-height come from newspaper text faces, so it stays readable at small sizes.
 
-Version 1.110. The first public release is [v1.0.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.0.0).
+Version 1.110. The latest release is [v1.1.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.1.0) (font version 1.110).
 
 ![AhmiPrint specimen](specimen.png)
 
@@ -42,7 +42,7 @@ The caps and descenders are tall for the size, so give body text a line height o
 
 Install `AhmiPrint-Regular.ttf` and `AhmiPrint-Bold.ttf` (or the two `.otf` files; install one format, not both). On Windows, select both files, right-click, and choose Install. On macOS, open them in Font Book and choose Install. The family name is AhmiPrint. Bold is the bold style of that family.
 
-The zip on the [release](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.0.0) has those files, the web fonts, this readme, and the specimen.
+The zip on the [release](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.1.0) has the `.ttf` and `.otf` files, the web fonts, this readme, the changelog, and the specimen.
 
 ## Characters
 
