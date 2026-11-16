@@ -1,12 +1,19 @@
 # AhmiPrint: a typewriter and newspaper slab serif, drawn as strokes on a 24-unit grid
 # (baseline 0, x-height 14, cap height 20, ascender 21, descender -6).
-# glyph <char-code> adv=<units>
+# glyph <char-code> adv=<units>    char-code is decimal (65) or hexadecimal (U+0041)
 #   L x0,y0 x1,y1            line
 #   A cx,cy rx,ry a0 a1      elliptical arc, degrees counter-clockwise from +x
 #   Q x0,y0 cx,cy x1,y1      quadratic curve
 #   D x,y                    dot (a round terminal)
+#   E cx,cy rx,ry            filled ellipse, its edge stroked like a line
+#   P x,y x,y x,y ...        filled polygon, its edge stroked like a line
+#   use <code> [dx,dy] [sx,sy]
+#                            draw another character's strokes here, scaled by sx,sy
+#                            (negative mirrors) and then moved by dx,dy. Accented
+#                            letters are a base letter plus a mark, each drawn once.
 # Stroke weight comes from the renderer (regular 2.6, bold 3.8). Every terminal is round,
-# like typewriter ink. Slab serifs are strokes of the same weight as the stems.
+# like typewriter ink. Slab serifs are strokes of the same weight as the stems. Scaling a
+# drawing with `use` never scales the stroke.
 
 glyph 32 adv=6.5
 glyph 33 adv=5.2
@@ -450,3 +457,1781 @@ Q 6.6,4 6.6,-3 2.6,-3
 glyph 126 adv=17.2
 Q 2.6,8 5.6,12 8.6,9
 Q 8.6,9 11.6,6 14.6,10
+
+# ---------------------------------------------------------------------------
+# Marks. Each is a spacing character, drawn once and centred in its advance.
+# Lowercase letters use them as drawn (between 18.2 and 21.2, clear of the
+# x-height). Capitals use them squashed to half height with
+#   use <mark> dx,15.1 1,0.5        (24.2 to 25.7, clear of the cap height)
+# ---------------------------------------------------------------------------
+glyph U+00B4 adv=7.2   # acute
+L 2.6,18.2 4.6,21.2
+glyph U+02C6 adv=9.6   # circumflex
+L 2.6,18.2 4.8,21
+L 4.8,21 7,18.2
+glyph U+02C7 adv=9.6   # caron
+L 2.6,21.2 4.8,18.4
+L 4.8,18.4 7,21.2
+glyph U+02D8 adv=10   # breve
+A 5,21.2 2.4,2.8 190 350
+glyph U+02D9 adv=5.2   # dot above
+D 2.6,19.4
+glyph U+02DA adv=10.4   # ring above
+A 5.2,20.8 2.6,2.6 0 360
+glyph U+02DB adv=7.2   # ogonek, hangs from 4.6,0
+Q 4.6,0 1.1,-3.6 5.6,-4.8
+glyph U+02DC adv=10.4   # small tilde
+Q 2.6,19 3.9,21.4 5.2,20
+Q 5.2,20 6.5,18.6 7.8,21
+glyph U+02DD adv=12.2   # double acute
+L 2.6,18.2 4,21.2
+L 7.6,18.2 9,21.2
+glyph U+00A8 adv=10.4   # diaeresis
+D 2.6,19.4
+D 7.8,19.4
+glyph U+00AF adv=10.4   # macron
+L 2.6,19.4 7.8,19.4
+glyph U+00B8 adv=7.2   # cedilla, hangs from 3.6,0
+L 3.6,0 3.6,-2
+A 3.6,-3.8 1.9,1.8 90 -140
+
+# ---------------------------------------------------------------------------
+# Latin-1 punctuation and symbols
+# ---------------------------------------------------------------------------
+glyph U+00A0 adv=6.5   # no-break space
+glyph U+00A1 adv=5.2   # inverted exclamation
+use 33 5.2,14 -1,-1
+glyph U+00A2 adv=14.6   # cent
+use 99
+L 8.1,17 8.1,-3
+glyph U+00A3 adv=17   # pound
+A 9.6,15.5 4.5,4.5 15 180
+L 5.1,15.5 5.1,4
+Q 5.1,4 5.1,0 2.6,0
+L 2.6,0 14.1,0
+L 2.6,10 10.6,10
+glyph U+00A4 adv=17.2   # currency sign
+A 8.6,9 4.5,4.5 0 360
+L 3.1,3.5 4.9,5.3
+L 14.1,3.5 12.3,5.3
+L 3.1,14.5 4.9,12.7
+L 14.1,14.5 12.3,12.7
+glyph U+00A5 adv=21.2   # yen
+use 89
+L 5.6,9 15.6,9
+L 5.6,5 15.6,5
+glyph U+00A6 adv=5.2   # broken bar
+L 2.6,22 2.6,11.5
+L 2.6,6.5 2.6,-4
+glyph U+00A7 adv=15.2   # section
+A 7.6,16.25 4,3.25 20 270
+A 7.6,9.75 4,3.25 0 360
+A 7.6,3.25 4,3.25 200 450
+glyph U+00A9 adv=23.2   # copyright
+A 11.6,10 9,10 0 360
+A 11.6,10 4,4.5 45 315
+glyph U+00AA adv=11.6   # feminine ordinal
+use 97 1,9.4 0.6,0.6
+L 2.6,6.5 9.1,6.5
+glyph U+00AB adv=15.7   # left guillemet
+use U+2039
+use U+2039 5.5,0
+glyph U+00AC adv=17.2   # not
+L 2.6,9 14.6,9
+L 14.6,9 14.6,4.5
+glyph U+00AD adv=12.2   # soft hyphen
+use 45
+glyph U+00AE adv=23.2   # registered
+A 11.6,10 9,10 0 360
+L 9.1,5 9.1,15
+L 9.1,15 12.1,15
+A 12.1,12.75 2.25,2.25 -90 90
+L 9.1,10.5 12.1,10.5
+L 12.1,10.5 15.1,5
+glyph U+00B0 adv=12.2   # degree
+A 6.1,16.5 3.5,3.5 0 360
+glyph U+00B1 adv=17.2   # plus-minus
+L 8.6,16 8.6,6
+L 2.6,11 14.6,11
+L 2.6,1.5 14.6,1.5
+glyph U+00B2 adv=11.8   # superscript two
+use 50 1.2,9.5 0.55,0.55
+glyph U+00B3 adv=11.8   # superscript three
+use 51 1.2,9.5 0.55,0.55
+glyph U+00B5 adv=20.2   # micro
+L 4.6,14 4.6,-6
+A 10.1,6 5.5,6 180 360
+L 15.6,14 15.6,0
+L 2.6,14 4.6,14
+L 13.6,14 15.6,14
+L 15.6,0 17.6,0
+glyph U+00B6 adv=18.2   # pilcrow
+L 8.1,20 15.6,20
+L 9.6,20 9.6,-3
+L 13.6,20 13.6,-3
+A 8.1,14.5 4.5,5.5 90 270
+E 7.6,14.5 2,3.5
+L 8.1,9 9.6,9
+glyph U+00B7 adv=5.2   # middle dot
+D 2.6,9
+glyph U+00B9 adv=11.8   # superscript one
+use 49 1.2,9.5 0.55,0.55
+glyph U+00BA adv=11.6   # masculine ordinal
+use 111 1,9.4 0.6,0.6
+L 2.6,6.5 9.1,6.5
+glyph U+00BB adv=15.7   # right guillemet
+use U+203A
+use U+203A 5.5,0
+glyph U+00BC adv=25   # one quarter
+use 49 1.2,9.5 0.55,0.55
+L 15.6,20 7.6,0
+use 52 14,0 0.55,0.55
+glyph U+00BD adv=25   # one half
+use 49 1.2,9.5 0.55,0.55
+L 15.6,20 7.6,0
+use 50 14,0 0.55,0.55
+glyph U+00BE adv=25   # three quarters
+use 51 1.2,9.5 0.55,0.55
+L 15.6,20 7.6,0
+use 52 14,0 0.55,0.55
+glyph U+00BF adv=15.2   # inverted question
+use 63 15.2,14 -1,-1
+glyph U+00D7 adv=17.2   # multiply
+L 3.6,4 13.6,14
+L 13.6,4 3.6,14
+glyph U+00F7 adv=17.2   # divide
+L 2.6,9 14.6,9
+D 8.6,14
+D 8.6,4
+
+# ---------------------------------------------------------------------------
+# Latin letters that are not a base letter plus a mark
+# ---------------------------------------------------------------------------
+glyph U+00C6 adv=27.2   # AE
+L 5.1,0 14.1,20
+L 8.25,7 14.1,7
+L 2.6,0 7.6,0
+L 11.6,20 24.6,20
+L 24.6,20 24.6,16.5
+L 14.1,20 14.1,0
+L 14.1,10.5 21.1,10.5
+L 21.1,13 21.1,8
+L 11.6,0 24.6,0
+L 24.6,0 24.6,4
+glyph U+00E6 adv=23.7   # ae
+A 6.85,9.5 4.25,4.5 0 160
+L 11.1,9.5 11.1,2
+A 6.85,4.2 4.25,4.2 0 360
+L 11.1,7.5 21.1,7.5
+A 16.1,7 5,7 0 315
+glyph U+00D0 adv=20.2   # Eth
+use 68
+L 1.6,10 8.6,10
+glyph U+00F0 adv=16.2   # eth
+A 8.1,7 5.5,7 0 360
+Q 13.6,7 13.6,15 7.1,20
+L 6.1,15 11.1,18.5
+glyph U+00D8 adv=20.2   # O slash
+use 79
+L 3.6,-1 16.6,21
+glyph U+00F8 adv=16.2   # o slash
+use 111
+L 3.1,-1 13.1,15
+glyph U+00DE adv=19.2   # Thorn
+L 5.1,20 5.1,0
+L 2.6,20 8.1,20
+L 2.6,0 8.1,0
+L 5.1,15.5 11.1,15.5
+A 11.1,10.75 4.75,4.75 -90 90
+L 5.1,6 11.1,6
+glyph U+00FE adv=18.2   # thorn
+L 4.6,21 4.6,-6
+A 10.1,7 5.5,7 0 360
+L 2.6,21 4.6,21
+L 2.6,-6 7.1,-6
+glyph U+00DF adv=17.7   # sharp s
+L 4.6,0 4.6,16
+A 8.85,16 4.25,4.5 0 180
+Q 13.1,16 13.1,11.5 8.6,11.5
+A 8.6,5.75 5,5.75 90 -100
+L 2.6,0 4.6,0
+glyph U+0110 adv=20.2   # D stroke
+use U+00D0
+glyph U+0111 adv=18.2   # d stroke
+use 100
+L 10.1,17.5 16.6,17.5
+glyph U+0126 adv=22.2   # H bar
+use 72
+L 1.6,15 20.6,15
+glyph U+0127 adv=20.2   # h bar
+use 104
+L 1.6,17.5 9.6,17.5
+glyph U+0131 adv=11.2   # dotless i
+L 5.6,14 5.6,0
+L 3.1,14 5.6,14
+L 2.6,0 8.6,0
+glyph U+0237 adv=9.2   # dotless j
+L 6.6,14 6.6,-1
+Q 6.6,-1 6.6,-6 2.6,-6
+L 4.1,14 6.6,14
+glyph U+0132 adv=25.8   # IJ
+use 73
+use 74 8.6,0
+glyph U+0133 adv=16.8   # ij
+use 105
+use 106 7.6,0
+glyph U+0138 adv=18.7   # kra
+L 4.6,14 4.6,0
+L 13.6,14 5.1,5.9
+L 8.2,8.4 14.6,0
+L 2.6,14 6.6,14
+L 2.6,0 6.6,0
+L 11.6,14 15.6,14
+L 12.6,0 16.1,0
+glyph U+013F adv=17.2   # L middle dot
+use 76
+D 11.1,10
+glyph U+0140 adv=14.2   # l middle dot
+use 108
+D 11.1,9
+glyph U+0141 adv=17.2   # L stroke
+use 76
+L 1.6,8 9.1,13
+glyph U+0142 adv=11.2   # l stroke
+use 108
+L 2.1,8 9.1,13
+glyph U+0149 adv=25.8   # n preceded by apostrophe
+use U+2019
+use 110 5.6,0
+glyph U+014A adv=22.2   # Eng
+L 5.1,20 5.1,0
+A 11.1,13 6,7 0 180
+L 17.1,13 17.1,-1
+Q 17.1,-1 17.1,-5 12.6,-5
+L 2.6,20 5.1,20
+L 2.6,0 7.6,0
+glyph U+014B adv=20.2   # eng
+L 4.6,14 4.6,0
+A 10.1,8 5.5,6 0 180
+L 15.6,8 15.6,-1
+Q 15.6,-1 15.6,-6 11.1,-6
+L 2.6,14 4.6,14
+L 2.6,0 6.6,0
+glyph U+0152 adv=25.7   # OE
+A 10.1,10 7,10 90 270
+L 10.1,20 23.1,20
+L 23.1,20 23.1,16.5
+L 10.1,0 23.1,0
+L 23.1,0 23.1,4
+L 14.1,20 14.1,0
+L 14.1,10.5 20.1,10.5
+L 20.1,13 20.1,8
+glyph U+0153 adv=25.2   # oe
+A 7.6,7 5,7 0 360
+L 12.6,7.5 22.6,7.5
+A 17.6,7 5,7 0 315
+glyph U+0166 adv=19.2   # T stroke
+use 84
+L 6.1,10 13.1,10
+glyph U+0167 adv=12.7   # t stroke
+use 116
+L 2.6,9 8.6,9
+glyph U+017F adv=11.7   # long s
+Q 10.6,21 5.6,21 5.6,16
+L 5.6,16 5.6,0
+L 3.1,0 8.6,0
+glyph U+0192 adv=15.2   # f with hook
+Q 13.1,21 8.6,21 8.1,16
+L 8.1,16 6.6,-2
+Q 6.6,-2 6.1,-6 2.1,-6
+L 4.6,13 11.6,13
+
+# ---------------------------------------------------------------------------
+# General punctuation
+# ---------------------------------------------------------------------------
+glyph U+2007 adv=17   # figure space: the width of a figure
+glyph U+2008 adv=5.2   # punctuation space: the width of a period
+glyph U+2009 adv=4.8   # thin space, a fifth of an em
+glyph U+200A adv=2.4   # hair space, a tenth of an em
+glyph U+202F adv=4.8   # narrow no-break space
+glyph U+2010 adv=12.2   # hyphen
+use 45
+glyph U+2011 adv=12.2   # non-breaking hyphen
+use 45
+glyph U+2012 adv=17   # figure dash: the width of a figure
+L 2.5,8 14.5,8
+glyph U+2013 adv=17.2   # en dash
+L 2.6,8 14.6,8
+glyph U+2014 adv=25.2   # em dash
+L 2.6,8 22.6,8
+glyph U+2015 adv=25.2   # horizontal bar
+L 1.6,8 23.6,8
+glyph U+2018 adv=7.6   # left single quote: a turned comma
+use 44 7.6,16.5 -1,-1
+glyph U+2019 adv=7.6   # right single quote: a raised comma
+use 44 0,18
+glyph U+201A adv=7.6   # low single quote
+use 44
+glyph U+201C adv=12.6   # left double quote
+use U+2018
+use U+2018 5,0
+glyph U+201D adv=12.6   # right double quote
+use U+2019
+use U+2019 5,0
+glyph U+201E adv=12.6   # low double quote
+use 44
+use 44 5,0
+glyph U+2020 adv=15.2   # dagger
+L 7.6,20 7.6,-4
+L 2.6,14.5 12.6,14.5
+glyph U+2021 adv=15.2   # double dagger
+L 7.6,20 7.6,-4
+L 2.6,14.5 12.6,14.5
+L 2.6,3 12.6,3
+glyph U+2022 adv=11.2   # bullet
+E 5.6,9 2.2,2.2
+glyph U+2026 adv=22.2   # ellipsis
+D 3.6,1
+D 11.1,1
+D 18.6,1
+glyph U+2030 adv=32.7   # per mille
+use 37
+A 27.1,4.5 3.5,3.5 0 360
+glyph U+2032 adv=7.2   # prime
+L 4.6,20 2.6,14
+glyph U+2033 adv=11.7   # double prime
+L 4.6,20 2.6,14
+L 9.1,20 7.1,14
+glyph U+2039 adv=10.2   # single left angle quote
+L 7.6,12 3.1,7
+L 3.1,7 7.6,2
+glyph U+203A adv=10.2   # single right angle quote
+L 2.6,12 7.1,7
+L 7.1,7 2.6,2
+glyph U+203C adv=10.2   # double exclamation
+use 33
+use 33 5,0
+glyph U+2044 adv=11.2   # fraction slash
+L 9.1,20 2.1,0
+
+# ---------------------------------------------------------------------------
+# Currency, letterlike, arrows, maths
+# ---------------------------------------------------------------------------
+glyph U+20AC adv=18.2   # euro
+A 10.6,10 7,10 40 320
+L 15.96,16.43 15.96,19.5
+L 1.6,12.5 11.6,12.5
+L 1.6,7.5 10.6,7.5
+glyph U+20B9 adv=17.2   # rupee
+L 3.1,20 14.6,20
+L 3.1,15.5 14.6,15.5
+A 6.6,15.25 5,4.75 90 -90
+L 6.6,10.5 3.1,10.5
+L 3.6,10.5 12.6,0
+glyph U+20BD adv=19.2   # ruble
+use 80
+L 1.6,4.5 10.6,4.5
+glyph U+20BA adv=18.2   # lira
+L 6.1,21 6.1,0
+Q 6.1,0 15.6,0 15.6,8.5
+L 2.1,10 11.1,14
+L 2.1,5.5 11.1,9.5
+glyph U+20A9 adv=30.2   # won
+use 87
+L 1.6,12 28.6,12
+L 1.6,7.5 28.6,7.5
+glyph U+20AA adv=23.2   # sheqel
+L 4.1,0 4.1,16
+Q 4.1,16 14.1,16 14.1,9
+L 14.1,9 14.1,5
+L 19.1,16 19.1,0
+Q 19.1,0 9.1,0 9.1,7
+L 9.1,7 9.1,11
+glyph U+20AB adv=18.2   # dong
+use 100
+L 10.1,17.5 16.6,17.5
+L 4.6,-3.5 15.6,-3.5
+glyph U+20B1 adv=19.2   # peso
+use 80
+L 1.6,16.5 17.1,16.5
+L 1.6,12.5 17.1,12.5
+glyph U+20B4 adv=17.2   # hryvnia
+A 8.6,16 4.5,4 160 -60
+L 10.85,12.54 4.6,4.5
+A 8.6,4.5 4,4 180 340
+L 3.1,12 14.1,12
+L 3.1,7.5 14.1,7.5
+glyph U+20B8 adv=19.2   # tenge
+L 2.6,20.5 16.6,20.5
+L 2.6,15.5 16.6,15.5
+L 9.6,15.5 9.6,0
+glyph U+20BF adv=20.2   # bitcoin
+use 66
+L 6.6,20 6.6,23
+L 11.1,20 11.1,23
+L 6.6,0 6.6,-3
+L 11.1,0 11.1,-3
+glyph U+2122 adv=18.7   # trade mark
+L 2.1,20 8.1,20
+L 5.1,20 5.1,12.5
+L 10.1,12.5 10.1,20
+L 10.1,20 13.1,15
+L 13.1,15 16.1,20
+L 16.1,20 16.1,12.5
+glyph U+2116 adv=31.7   # numero
+use 78
+A 26.6,15 3,3.5 0 360
+L 23.6,9.5 29.6,9.5
+glyph U+2190 adv=22.2   # left arrow
+L 3.1,9 19.1,9
+L 3.1,9 8.6,14.5
+L 3.1,9 8.6,3.5
+glyph U+2191 adv=18.2   # up arrow
+L 9.1,0 9.1,19
+L 9.1,19 3.6,13.5
+L 9.1,19 14.6,13.5
+glyph U+2192 adv=22.2   # right arrow
+use U+2190 22.2,0 -1,1
+glyph U+2193 adv=18.2   # down arrow
+use U+2191 0,19 1,-1
+glyph U+2194 adv=26.2   # left right arrow
+L 3.1,9 23.1,9
+L 3.1,9 8.6,14.5
+L 3.1,9 8.6,3.5
+L 23.1,9 17.6,14.5
+L 23.1,9 17.6,3.5
+glyph U+2195 adv=18.2   # up down arrow
+L 9.1,-1 9.1,20
+L 9.1,20 3.6,14.5
+L 9.1,20 14.6,14.5
+L 9.1,-1 3.6,4.5
+L 9.1,-1 14.6,4.5
+glyph U+21E7 adv=18.2   # white up arrow (shift)
+L 5.6,1 12.6,1
+L 12.6,1 12.6,10
+L 12.6,10 16.1,10
+L 16.1,10 9.1,19
+L 9.1,19 2.1,10
+L 2.1,10 5.6,10
+L 5.6,10 5.6,1
+glyph U+2212 adv=17.2   # minus
+L 2.6,9 14.6,9
+glyph U+221E adv=21.2   # infinity
+A 6.6,9 4,3.5 0 360
+A 14.6,9 4,3.5 0 360
+glyph U+221A adv=21.2   # square root
+L 2.6,10 5.6,10
+L 5.6,10 9.1,0
+L 9.1,0 15.1,21
+L 15.1,21 19.1,21
+glyph U+2248 adv=17.2   # almost equal
+use 126 0,2.8
+use 126 0,-2.8
+glyph U+2260 adv=17.2   # not equal
+use 61
+L 5.6,2 11.6,15.5
+glyph U+2264 adv=15.2   # less or equal
+L 12.6,17 2.6,11.5
+L 2.6,11.5 12.6,6
+L 2.6,1.5 12.6,1.5
+glyph U+2265 adv=15.2   # greater or equal
+L 2.6,17 12.6,11.5
+L 12.6,11.5 2.6,6
+L 2.6,1.5 12.6,1.5
+
+# ---------------------------------------------------------------------------
+# Shapes the UI toolkit draws
+# ---------------------------------------------------------------------------
+glyph U+25FB adv=18.2   # white medium square, stands in for a missing character
+L 3.1,2 15.1,2
+L 15.1,2 15.1,14
+L 15.1,14 3.1,14
+L 3.1,14 3.1,2
+glyph U+25B2 adv=18.2   # black up triangle
+P 3.1,2 15.1,2 9.1,14
+glyph U+25BC adv=18.2   # black down triangle
+P 3.1,14 15.1,14 9.1,2
+glyph U+25BA adv=18.2   # black right pointer
+P 3.1,2.5 3.1,15.5 15.1,9
+glyph U+25C4 adv=18.2   # black left pointer
+P 15.1,2.5 15.1,15.5 3.1,9
+glyph U+23F4 adv=17.2   # left triangle
+P 12.6,4 12.6,14 4.6,9
+glyph U+23F5 adv=17.2   # right triangle
+P 4.6,4 4.6,14 12.6,9
+glyph U+23F6 adv=17.2   # up triangle
+P 3.6,5 13.6,5 8.6,13
+glyph U+23F7 adv=17.2   # down triangle
+P 3.6,13 13.6,13 8.6,5
+glyph U+2713 adv=19.2   # check mark
+L 3.1,9 7.1,3
+L 7.1,3 16.1,17
+glyph U+2717 adv=19.2   # ballot x
+L 4.1,15.5 14.6,2.5
+L 3.6,3 15.6,16
+glyph U+25CF adv=19.2   # black circle
+E 9.6,9 5.6,5.6
+glyph U+25CB adv=19.2   # white circle
+A 9.6,9 6.6,6.6 0 360
+
+# ---------------------------------------------------------------------------
+# Greek. Letters shaped like Latin ones use the Latin drawing.
+# ---------------------------------------------------------------------------
+glyph U+0391 adv=23.2   # Alpha
+use 65
+glyph U+0392 adv=20.2   # Beta
+use 66
+glyph U+0393 adv=17.2   # Gamma
+L 5.1,20 5.1,0
+L 2.6,20 15.6,20
+L 15.6,20 15.6,16.5
+L 2.6,0 8.6,0
+glyph U+0394 adv=21.2   # Delta
+L 2.6,0 10.6,20
+L 10.6,20 18.6,0
+L 2.6,0 18.6,0
+glyph U+0395 adv=18.2   # Epsilon
+use 69
+glyph U+0396 adv=16.2   # Zeta
+use 90
+glyph U+0397 adv=22.2   # Eta
+use 72
+glyph U+0398 adv=20.2   # Theta
+use 79
+L 7.1,10 13.1,10
+glyph U+0399 adv=11.2   # Iota
+use 73
+glyph U+039A adv=21.7   # Kappa
+use 75
+glyph U+039B adv=23.2   # Lamda
+L 4.6,0 11.6,20
+L 11.6,20 18.6,0
+L 2.6,0 7.1,0
+L 16.1,0 20.6,0
+L 9.1,20 11.6,20
+glyph U+039C adv=26.2   # Mu
+use 77
+glyph U+039D adv=22.2   # Nu
+use 78
+glyph U+039E adv=18.2   # Xi
+L 2.6,20 15.6,20
+L 2.6,0 15.6,0
+L 4.6,10 13.6,10
+L 2.6,20 2.6,17
+L 15.6,20 15.6,17
+L 2.6,0 2.6,3
+L 15.6,0 15.6,3
+L 4.6,12 4.6,8
+L 13.6,12 13.6,8
+glyph U+039F adv=20.2   # Omicron
+use 79
+glyph U+03A0 adv=22.2   # Pi
+L 5.1,20 5.1,0
+L 17.1,20 17.1,0
+L 2.6,20 19.6,20
+L 2.6,0 7.6,0
+L 14.6,0 19.6,0
+glyph U+03A1 adv=19.2   # Rho
+use 80
+glyph U+03A3 adv=18.2   # Sigma
+L 2.6,20 15.6,20
+L 15.6,20 15.6,16.5
+L 3.1,20 9.6,10
+L 9.6,10 3.1,0
+L 2.6,0 15.6,0
+L 15.6,0 15.6,3.5
+glyph U+03A4 adv=19.2   # Tau
+use 84
+glyph U+03A5 adv=21.2   # Upsilon
+use 89
+glyph U+03A6 adv=22.2   # Phi
+L 11.1,20 11.1,0
+A 11.1,10 7.5,6 0 360
+L 7.6,20 14.6,20
+L 7.6,0 14.6,0
+glyph U+03A7 adv=21.2   # Chi
+use 88
+glyph U+03A8 adv=22.2   # Psi
+L 11.1,20 11.1,0
+L 4.6,20 4.6,13
+A 11.1,13 6.5,6 180 360
+L 17.6,13 17.6,20
+L 2.6,20 6.6,20
+L 15.6,20 19.6,20
+L 8.6,20 13.6,20
+L 8.1,0 14.1,0
+glyph U+03A9 adv=22.2   # Omega
+A 11.1,11.5 7.5,8.5 -55 235
+L 6.8,4.54 7.6,0
+L 15.4,4.54 14.6,0
+L 2.6,0 7.6,0
+L 14.6,0 19.6,0
+glyph U+03B1 adv=17.2   # alpha
+A 7.6,7 5,7 0 360
+L 12.6,13.5 12.6,0
+L 12.6,0 15.1,0
+glyph U+03B2 adv=17.7   # beta
+L 4.6,-6 4.6,16
+A 8.85,16 4.25,4.5 0 180
+Q 13.1,16 13.1,11.5 8.6,11.5
+A 8.6,5.75 5,5.75 90 -100
+glyph U+03B3 adv=18.2   # gamma
+L 2.6,14 4.1,14
+L 4.1,14 9.1,0
+L 14.6,14 9.1,0
+L 9.1,0 9.1,-6
+glyph U+03B4 adv=16.2   # delta
+A 8.1,6.5 5.5,6.5 0 360
+Q 8.1,13 3.1,16 5.6,19
+Q 5.6,19 7.6,21 12.6,20.5
+glyph U+03B5 adv=15.2   # epsilon
+A 7.6,10.5 4.5,3.5 40 270
+A 7.6,3.5 5,3.5 90 320
+glyph U+03B6 adv=14.7   # zeta
+L 4.1,21 12.1,21
+Q 12.1,21 2.6,14 2.6,7
+Q 2.6,7 2.6,1.5 8.6,1
+Q 8.6,1 12.6,0.6 12.1,-2.8
+Q 12.1,-2.8 11.6,-5.5 9.1,-6
+glyph U+03B7 adv=20.2   # eta
+L 4.6,14 4.6,0
+A 10.1,8 5.5,6 0 180
+L 15.6,8 15.6,-6
+L 2.6,14 4.6,14
+glyph U+03B8 adv=16.2   # theta
+A 8.1,10.5 5.5,10.5 0 360
+L 2.6,10.5 13.6,10.5
+glyph U+03B9 adv=11.2   # iota
+L 5.6,14 5.6,3
+Q 5.6,3 5.6,0 8.6,0
+L 3.1,14 5.6,14
+glyph U+03BA adv=18.7   # kappa
+use U+0138
+glyph U+03BB adv=17.2   # lamda
+L 2.6,21 4.6,21
+L 4.6,21 14.1,0
+L 9.12,10.5 3.6,0
+glyph U+03BC adv=20.2   # mu
+use U+00B5
+glyph U+03BD adv=19.2   # nu
+use 118
+glyph U+03BE adv=14.7   # xi
+L 4.6,21 12.1,21
+A 8.1,17.5 3.6,3.5 90 270
+L 8.1,14 11.1,14
+A 8.1,7.5 5.5,6.5 90 270
+Q 8.1,1 12.1,1 11.6,-2.5
+Q 11.6,-2.5 11.1,-5.5 8.6,-6
+glyph U+03BF adv=16.2   # omicron
+use 111
+glyph U+03C0 adv=19.2   # pi
+L 2.6,14 16.6,14
+L 5.6,14 5.6,0
+L 12.6,14 12.6,0
+L 3.6,0 7.6,0
+L 10.6,0 14.6,0
+glyph U+03C1 adv=16.7   # rho
+A 9.1,7 5,7 0 360
+L 4.1,7 4.1,-6
+glyph U+03C2 adv=15.2   # final sigma
+A 8.6,7.5 5.5,6.5 50 270
+Q 8.6,1 12.6,1 12.1,-2.5
+Q 12.1,-2.5 11.6,-5 8.6,-5.5
+glyph U+03C3 adv=17.7   # sigma
+A 7.6,7 5,7 0 360
+L 7.6,14 15.1,14
+glyph U+03C4 adv=15.7   # tau
+L 2.6,14 13.6,14
+L 8.1,14 8.1,3
+Q 8.1,3 8.1,0 11.1,0
+glyph U+03C5 adv=20.2   # upsilon
+L 4.6,14 4.6,6
+A 10.1,6 5.5,6 180 360
+L 15.6,6 15.6,14
+L 2.6,14 4.6,14
+glyph U+03C6 adv=19.2   # phi
+A 9.6,7 6.5,7 0 360
+L 9.6,16 9.6,-6
+glyph U+03C7 adv=18.2   # chi
+L 3.6,14 14.6,-6
+L 14.6,14 3.6,-6
+L 2.6,14 5.6,14
+L 12.6,-6 15.6,-6
+glyph U+03C8 adv=20.2   # psi
+L 4.6,14 4.6,7
+A 10.1,7 5.5,7 180 360
+L 15.6,7 15.6,14
+L 10.1,18 10.1,-6
+glyph U+03C9 adv=24.2   # omega
+A 7.85,6.5 4.25,6.5 120 360
+L 12.1,6.5 12.1,9
+A 16.35,6.5 4.25,6.5 180 420
+glyph U+0386 adv=23.2   # Alpha with tonos
+L 2.2,17.2 3.6,20.4
+use 65
+glyph U+0388 adv=21.7   # Epsilon with tonos
+L 2.2,17.2 3.6,20.4
+use 69 3.5,0
+glyph U+0389 adv=25.7   # Eta with tonos
+L 2.2,17.2 3.6,20.4
+use 72 3.5,0
+glyph U+038A adv=14.7   # Iota with tonos
+L 2.2,17.2 3.6,20.4
+use 73 3.5,0
+glyph U+038C adv=22.7   # Omicron with tonos
+L 2.2,17.2 3.6,20.4
+use 79 2.5,0
+glyph U+038E adv=24.7   # Upsilon with tonos
+L 2.2,17.2 3.6,20.4
+use 89 3.5,0
+glyph U+038F adv=24.7   # Omega with tonos
+L 2.2,17.2 3.6,20.4
+use U+03A9 2.5,0
+glyph U+0390 adv=13.2   # iota with dialytika and tonos
+use U+03B9 1,0
+D 1.7,19.4
+D 11.5,19.4
+L 6.3,18.6 7.1,21.6
+glyph U+03B0 adv=20.2   # upsilon with dialytika and tonos
+use U+03C5
+D 5.2,19.4
+D 15,19.4
+L 9.8,18.6 10.6,21.6
+
+# ---------------------------------------------------------------------------
+# Cyrillic. Letters shaped like Latin or Greek ones use that drawing.
+# ---------------------------------------------------------------------------
+glyph U+0402 adv=20.7   # Dje
+L 2.6,20 13.6,20
+L 2.6,20 2.6,17
+L 6.1,20 6.1,0
+L 3.6,0 8.6,0
+Q 6.1,11 9.1,12.5 12.6,12.5
+A 12.6,8 4.5,4.5 90 0
+L 17.1,8 17.1,0
+Q 17.1,0 17.1,-3.5 13.6,-3.5
+glyph U+0404 adv=17.6   # Ukrainian Ie
+use 67
+L 3.1,10 11.1,10
+glyph U+0405 adv=16.2   # Dze
+use 83
+glyph U+0406 adv=11.2   # Byelorussian-Ukrainian I
+use 73
+glyph U+0408 adv=17.2   # Je
+use 74
+glyph U+0409 adv=29.2   # Lje
+L 5.1,20 16.6,20
+Q 7.6,20 7.6,2 3.1,0.5
+L 14.6,20 14.6,0
+L 14.6,11.5 20.1,11.5
+A 20.1,5.75 5.75,5.75 -90 90
+L 12.1,0 20.1,0
+glyph U+040A adv=28.2   # Nje
+L 5.1,20 5.1,0
+L 14.6,20 14.6,0
+L 5.1,10.5 19.1,10.5
+A 19.1,5.25 5.5,5.25 -90 90
+L 12.1,0 19.1,0
+L 2.6,20 7.6,20
+L 12.1,20 17.1,20
+L 2.6,0 7.6,0
+glyph U+040B adv=21.2   # Tshe
+L 2.6,20 13.6,20
+L 2.6,20 2.6,17
+L 6.1,20 6.1,0
+L 3.6,0 8.6,0
+Q 6.1,11 9.1,12.5 12.6,12.5
+A 12.6,8 4.5,4.5 90 0
+L 17.1,8 17.1,0
+L 15.1,0 19.1,0
+glyph U+040F adv=22.2   # Dzhe
+L 5.1,20 5.1,0
+L 17.1,20 17.1,0
+L 5.1,0 17.1,0
+L 11.1,0 11.1,-4.5
+L 2.6,20 7.6,20
+L 14.6,20 19.6,20
+glyph U+0410 adv=23.2   # A
+use 65
+glyph U+0411 adv=19.7   # Be
+L 5.1,20 5.1,0
+L 2.6,20 15.6,20
+L 15.6,20 15.6,16.5
+L 5.1,11 11.6,11
+A 11.6,5.5 5.5,5.5 -90 90
+L 2.6,0 11.6,0
+glyph U+0412 adv=20.2   # Ve
+use 66
+glyph U+0413 adv=17.2   # Ghe
+use U+0393
+glyph U+0414 adv=20.7   # De
+L 6.6,20 17.6,20
+L 15.1,20 15.1,0
+Q 7.6,20 7.6,6 4.1,0
+L 2.1,0 18.6,0
+L 2.1,0 2.1,-4
+L 18.6,0 18.6,-4
+glyph U+0415 adv=18.2   # Ie
+use 69
+glyph U+0416 adv=25.2   # Zhe
+L 12.6,20 12.6,0
+L 4.1,20 12.1,10
+L 12.1,10 3.6,0
+L 21.1,20 13.1,10
+L 13.1,10 21.6,0
+L 10.1,20 15.1,20
+L 10.1,0 15.1,0
+L 2.1,20 5.6,20
+L 19.6,20 23.1,20
+L 1.6,0 5.1,0
+L 20.1,0 23.6,0
+glyph U+0417 adv=17   # Ze
+use 51
+glyph U+0418 adv=22.2   # I
+L 5.1,0 5.1,20
+L 5.1,0 17.1,20
+L 17.1,20 17.1,0
+L 2.6,20 7.6,20
+L 14.6,20 19.6,20
+L 2.6,0 7.6,0
+L 14.6,0 19.6,0
+glyph U+041A adv=21.7   # Ka
+use 75
+glyph U+041B adv=21.2   # El
+L 5.1,20 18.6,20
+L 16.1,20 16.1,0
+Q 7.6,20 7.6,2 3.1,0.5
+L 13.6,0 18.6,0
+glyph U+041C adv=26.2   # Em
+use 77
+glyph U+041D adv=22.2   # En
+use 72
+glyph U+041E adv=20.2   # O
+use 79
+glyph U+041F adv=22.2   # Pe
+use U+03A0
+glyph U+0420 adv=19.2   # Er
+use 80
+glyph U+0421 adv=17.6   # Es
+use 67
+glyph U+0422 adv=19.2   # Te
+use 84
+glyph U+0423 adv=22.2   # U
+L 4.6,20 11.1,7
+L 17.6,20 9.6,2
+Q 9.6,2 8.1,-1 4.6,0
+L 2.6,20 7.1,20
+L 15.1,20 19.6,20
+glyph U+0424 adv=22.2   # Ef
+use U+03A6
+glyph U+0425 adv=21.2   # Ha
+use 88
+glyph U+0426 adv=21.7   # Tse
+L 5.1,20 5.1,0
+L 16.1,20 16.1,0
+L 5.1,0 19.1,0
+L 19.1,0 19.1,-4.5
+L 2.6,20 7.6,20
+L 13.6,20 18.6,20
+glyph U+0427 adv=21.2   # Che
+L 5.1,20 5.1,13
+Q 5.1,13 5.1,8.5 10.6,8.5
+L 10.6,8.5 16.1,8.5
+L 16.1,20 16.1,0
+L 2.6,20 7.6,20
+L 13.6,20 18.6,20
+L 13.6,0 18.6,0
+glyph U+0428 adv=26.2   # Sha
+L 5.1,20 5.1,0
+L 13.1,20 13.1,0
+L 21.1,20 21.1,0
+L 2.6,0 23.6,0
+L 2.6,20 7.6,20
+L 10.6,20 15.6,20
+L 18.6,20 23.6,20
+glyph U+0429 adv=27.2   # Shcha
+use U+0428
+L 24.6,0 24.6,-4.5
+L 21.1,0 24.6,0
+glyph U+042A adv=21.7   # Hard sign
+L 2.6,20 7.6,20
+L 2.6,20 2.6,17
+L 7.6,20 7.6,0
+L 7.6,11.5 13.1,11.5
+A 13.1,5.75 5.75,5.75 -90 90
+L 5.1,0 13.1,0
+glyph U+042B adv=26.2   # Yeru
+L 5.1,20 5.1,0
+L 5.1,11.5 10.1,11.5
+A 10.1,5.75 5.75,5.75 -90 90
+L 2.6,0 10.1,0
+L 2.6,20 7.6,20
+L 21.1,20 21.1,0
+L 18.6,20 23.6,20
+L 18.6,0 23.6,0
+glyph U+042C adv=19.2   # Soft sign
+L 5.1,20 5.1,0
+L 2.6,20 7.6,20
+L 5.1,11.5 10.6,11.5
+A 10.6,5.75 5.75,5.75 -90 90
+L 2.6,0 10.6,0
+glyph U+042D adv=17.6   # E
+use 67 17.6,0 -1,1
+L 7.1,10 14.1,10
+glyph U+042E adv=24.7   # Yu
+L 5.1,20 5.1,0
+L 5.1,10 9.1,10
+A 15.6,10 6.5,10 0 360
+L 2.6,20 7.6,20
+L 2.6,0 7.6,0
+glyph U+042F adv=21.2   # Ya
+use 82 21.2,0 -1,1
+glyph U+0430 adv=16.2   # a
+use 97
+glyph U+0431 adv=16.2   # be
+A 8.1,6.5 5.5,6.5 0 360
+Q 2.6,6.5 2.6,19 13.1,21
+glyph U+0432 adv=17.2   # ve
+L 4.6,14 4.6,0
+L 2.6,14 10.6,14
+A 10.6,10.75 3.25,3.25 -90 90
+L 4.6,7.5 11.1,7.5
+A 11.1,3.75 3.75,3.75 -90 90
+L 2.6,0 11.1,0
+glyph U+0433 adv=15.2   # ghe
+L 4.6,14 4.6,0
+L 2.6,14 12.6,14
+L 12.6,14 12.6,11.5
+L 2.6,0 7.1,0
+glyph U+0434 adv=18.7   # de
+L 6.1,14 16.1,14
+L 13.1,14 13.1,0
+Q 6.6,14 6.6,4 3.6,0
+L 2.1,0 16.6,0
+L 2.1,0 2.1,-4
+L 16.6,0 16.6,-4
+glyph U+0435 adv=16.2   # ie
+use 101
+glyph U+0436 adv=23.2   # zhe
+L 11.6,14 11.6,0
+L 3.6,14 11.1,7
+L 11.1,7 3.1,0
+L 19.6,14 12.1,7
+L 12.1,7 20.1,0
+L 9.6,14 13.6,14
+L 9.6,0 13.6,0
+L 2.1,14 5.1,14
+L 18.1,14 21.1,14
+L 1.6,0 4.6,0
+L 18.6,0 21.6,0
+glyph U+0437 adv=15.2   # ze
+A 7.6,10.5 4.5,3.5 -90 160
+A 7.85,3.75 5,3.75 -160 90
+glyph U+0438 adv=20.2   # i
+L 4.6,0 4.6,14
+L 4.6,0 15.6,14
+L 15.6,14 15.6,0
+L 2.6,14 6.6,14
+L 13.6,14 17.6,14
+L 2.6,0 6.6,0
+L 13.6,0 17.6,0
+glyph U+043A adv=18.7   # ka
+use U+0138
+glyph U+043B adv=19.2   # el
+L 5.6,14 16.6,14
+L 14.6,14 14.6,0
+Q 6.6,14 6.6,2 2.6,0.5
+L 12.6,0 16.6,0
+glyph U+043C adv=22.2   # em
+L 4.6,0 4.6,14
+L 4.6,14 11.1,3
+L 11.1,3 17.6,14
+L 17.6,14 17.6,0
+L 2.6,14 4.6,14
+L 17.6,14 19.6,14
+L 2.6,0 6.6,0
+L 15.6,0 19.6,0
+glyph U+043D adv=20.2   # en
+L 4.6,14 4.6,0
+L 15.6,14 15.6,0
+L 4.6,7 15.6,7
+L 2.6,14 6.6,14
+L 13.6,14 17.6,14
+L 2.6,0 6.6,0
+L 13.6,0 17.6,0
+glyph U+043E adv=16.2   # o
+use 111
+glyph U+043F adv=20.2   # pe
+L 4.6,14 4.6,0
+L 15.6,14 15.6,0
+L 2.6,14 17.6,14
+L 2.6,0 6.6,0
+L 13.6,0 17.6,0
+glyph U+0440 adv=18.2   # er
+use 112
+glyph U+0441 adv=14.6   # es
+use 99
+glyph U+0442 adv=18.2   # te
+L 2.6,14 15.6,14
+L 2.6,14 2.6,11.5
+L 15.6,14 15.6,11.5
+L 9.1,14 9.1,0
+L 6.6,0 11.6,0
+glyph U+0443 adv=19.2   # u
+use 121
+glyph U+0444 adv=20.2   # ef
+L 10.1,21 10.1,-6
+A 10.1,7 6.5,7 0 360
+L 8.1,21 10.1,21
+L 7.6,-6 12.6,-6
+glyph U+0445 adv=18.2   # ha
+use 120
+glyph U+0446 adv=19.2   # tse
+L 4.6,14 4.6,0
+L 14.6,14 14.6,0
+L 4.6,0 16.6,0
+L 16.6,0 16.6,-4
+L 2.6,14 6.6,14
+L 12.6,14 16.6,14
+glyph U+0447 adv=19.2   # che
+L 4.6,14 4.6,9.5
+Q 4.6,9.5 4.6,6 9.1,6
+L 9.1,6 14.6,6
+L 14.6,14 14.6,0
+L 2.6,14 6.6,14
+L 12.6,14 16.6,14
+L 12.6,0 16.6,0
+glyph U+0448 adv=23.2   # sha
+L 4.6,14 4.6,0
+L 11.6,14 11.6,0
+L 18.6,14 18.6,0
+L 2.6,0 20.6,0
+L 2.6,14 6.6,14
+L 9.6,14 13.6,14
+L 16.6,14 20.6,14
+glyph U+0449 adv=23.7   # shcha
+use U+0448
+L 21.1,0 21.1,-4
+glyph U+044A adv=18.2   # hard sign
+L 2.6,14 6.6,14
+L 2.6,14 2.6,12
+L 6.6,14 6.6,0
+L 6.6,8 11.6,8
+A 11.6,4 4,4 -90 90
+L 4.6,0 11.6,0
+glyph U+044B adv=23.2   # yeru
+L 4.6,14 4.6,0
+L 4.6,8 9.1,8
+A 9.1,4 4,4 -90 90
+L 2.6,0 9.1,0
+L 2.6,14 6.6,14
+L 18.6,14 18.6,0
+L 16.6,14 20.6,14
+L 16.6,0 20.6,0
+glyph U+044C adv=16.7   # soft sign
+L 4.6,14 4.6,0
+L 2.6,14 6.6,14
+L 4.6,8 10.1,8
+A 10.1,4 4,4 -90 90
+L 2.6,0 10.1,0
+glyph U+044D adv=14.6   # e
+use 99 14.6,0 -1,1
+L 5.1,7 11.1,7
+glyph U+044E adv=20.7   # yu
+L 4.6,14 4.6,0
+L 4.6,7 8.1,7
+A 13.1,7 5,7 0 360
+L 2.6,14 4.6,14
+L 2.6,0 6.6,0
+glyph U+044F adv=18.2   # ya
+L 13.6,14 13.6,0
+L 7.6,14 15.6,14
+A 7.6,10.25 3.75,3.75 90 270
+L 7.6,6.5 13.6,6.5
+L 9.1,6.5 4.1,0
+L 11.6,0 15.6,0
+L 2.6,0 6.1,0
+glyph U+0452 adv=20.2   # dje
+L 4.6,21 4.6,0
+L 1.6,17.5 9.6,17.5
+A 10.1,8 5.5,6 0 180
+L 15.6,8 15.6,-1
+Q 15.6,-1 15.6,-6 11.1,-6
+L 2.6,21 4.6,21
+L 2.6,0 6.6,0
+glyph U+0454 adv=14.6   # ukrainian ie
+use 99
+L 2.6,7 9.6,7
+glyph U+0455 adv=14.2   # dze
+use 115
+glyph U+0456 adv=11.2   # byelorussian-ukrainian i
+use 105
+glyph U+0458 adv=9.2   # je
+use 106
+glyph U+0459 adv=24.2   # lje
+L 5.6,14 13.6,14
+Q 6.6,14 6.6,2 2.6,0.5
+L 12.6,14 12.6,0
+L 12.6,8 17.6,8
+A 17.6,4 4,4 -90 90
+L 12.6,0 17.6,0
+glyph U+045A adv=24.2   # nje
+L 4.6,14 4.6,0
+L 13.6,14 13.6,0
+L 4.6,8 17.6,8
+A 17.6,4 4,4 -90 90
+L 13.6,0 17.6,0
+L 2.6,14 6.6,14
+L 11.6,14 15.6,14
+L 2.6,0 6.6,0
+glyph U+045B adv=20.2   # tshe
+use U+0127
+glyph U+045F adv=20.2   # dzhe
+L 4.6,14 4.6,0
+L 15.6,14 15.6,0
+L 4.6,0 15.6,0
+L 10.1,0 10.1,-4.5
+L 2.6,14 6.6,14
+L 13.6,14 17.6,14
+glyph U+0490 adv=17.2   # Ghe with upturn
+L 5.1,20 5.1,0
+L 2.6,20 15.1,20
+L 15.1,20 15.1,24
+L 2.6,0 8.6,0
+glyph U+0491 adv=15.2   # ghe with upturn
+L 4.6,14 4.6,0
+L 2.6,14 12.1,14
+L 12.1,14 12.1,18
+L 2.6,0 7.1,0
+glyph U+0492 adv=17.2   # Ghe with stroke
+use U+0393
+L 1.6,10 9.6,10
+glyph U+0493 adv=15.2   # ghe with stroke
+use U+0433
+L 1.6,7 8.6,7
+glyph U+049A adv=21.7   # Ka with descender
+use 75
+L 19.1,0 19.1,-4.5
+glyph U+049B adv=18.7   # ka with descender
+use U+0138
+L 16.1,0 16.1,-4
+glyph U+04A2 adv=22.2   # En with descender
+use 72
+L 19.6,0 19.6,-4.5
+glyph U+04A3 adv=20.2   # en with descender
+use U+043D
+L 17.6,0 17.6,-4
+glyph U+04AE adv=21.2   # Straight U
+use 89
+glyph U+04AF adv=19.2   # straight u
+L 4.1,14 9.6,5
+L 15.1,14 9.6,5
+L 9.6,5 9.6,-6
+L 2.6,14 6.1,14
+L 13.1,14 16.6,14
+L 7.1,-6 12.1,-6
+glyph U+04B0 adv=21.2   # Straight U with stroke
+use 89
+L 6.1,5 15.1,5
+glyph U+04B1 adv=19.2   # straight u with stroke
+use U+04AF
+L 5.6,-1.5 13.6,-1.5
+glyph U+04BA adv=22.2   # Shha
+L 5.1,20 5.1,0
+A 11.1,9 6,6.5 0 180
+L 17.1,9 17.1,0
+L 2.6,20 7.6,20
+L 2.6,0 7.6,0
+L 14.6,0 19.6,0
+glyph U+04BB adv=20.2   # shha
+use 104
+glyph U+04D8 adv=20.2   # Schwa
+use 101 20.25,20 -1.25,-1.43
+glyph U+04D9 adv=16.2   # schwa
+use 101 16.2,14 -1,-1
+glyph U+04E8 adv=20.2   # Barred O
+use 79
+L 2.6,10 17.6,10
+glyph U+04E9 adv=16.2   # barred o
+use 111
+L 2.6,7 13.6,7
+
+# ---------------------------------------------------------------------------
+# Accented letters: the base letter plus a mark drawn once above.
+# ---------------------------------------------------------------------------
+glyph U+00C0 adv=23.2   # latin capital letter a with grave
+use 65
+use U+0060 8,15.2 1,0.5
+glyph U+00C1 adv=23.2   # latin capital letter a with acute
+use 65
+use U+00B4 8,15.1 1,0.5
+glyph U+00C2 adv=23.2   # latin capital letter a with circumflex
+use 65
+use U+02C6 6.8,15.1 1,0.5
+glyph U+00C3 adv=23.2   # latin capital letter a with tilde
+use 65
+use U+02DC 6.4,15.1 1,0.5
+glyph U+00C4 adv=23.2   # latin capital letter a with diaeresis
+use 65
+use U+00A8 6.4,15.1 1,0.5
+glyph U+00C5 adv=23.2   # latin capital letter a with ring above
+use 65
+use U+02DA 6.4,1.6
+glyph U+00C7 adv=17.6   # latin capital letter c with cedilla
+use 67
+use U+00B8 6.5,0
+glyph U+00C8 adv=18.2   # latin capital letter e with grave
+use 69
+use U+0060 6,15.2 1,0.5
+glyph U+00C9 adv=18.2   # latin capital letter e with acute
+use 69
+use U+00B4 6,15.1 1,0.5
+glyph U+00CA adv=18.2   # latin capital letter e with circumflex
+use 69
+use U+02C6 4.8,15.1 1,0.5
+glyph U+00CB adv=18.2   # latin capital letter e with diaeresis
+use 69
+use U+00A8 4.4,15.1 1,0.5
+glyph U+00CC adv=11.2   # latin capital letter i with grave
+use 73
+use U+0060 2,15.2 1,0.5
+glyph U+00CD adv=11.2   # latin capital letter i with acute
+use 73
+use U+00B4 2,15.1 1,0.5
+glyph U+00CE adv=11.2   # latin capital letter i with circumflex
+use 73
+use U+02C6 0.8,15.1 1,0.5
+glyph U+00CF adv=11.2   # latin capital letter i with diaeresis
+use 73
+use U+00A8 0.4,15.1 1,0.5
+glyph U+00D1 adv=22.2   # latin capital letter n with tilde
+use 78
+use U+02DC 5.9,15.1 1,0.5
+glyph U+00D2 adv=20.2   # latin capital letter o with grave
+use 79
+use U+0060 6.5,15.2 1,0.5
+glyph U+00D3 adv=20.2   # latin capital letter o with acute
+use 79
+use U+00B4 6.5,15.1 1,0.5
+glyph U+00D4 adv=20.2   # latin capital letter o with circumflex
+use 79
+use U+02C6 5.3,15.1 1,0.5
+glyph U+00D5 adv=20.2   # latin capital letter o with tilde
+use 79
+use U+02DC 4.9,15.1 1,0.5
+glyph U+00D6 adv=20.2   # latin capital letter o with diaeresis
+use 79
+use U+00A8 4.9,15.1 1,0.5
+glyph U+00D9 adv=22.2   # latin capital letter u with grave
+use 85
+use U+0060 7.5,15.2 1,0.5
+glyph U+00DA adv=22.2   # latin capital letter u with acute
+use 85
+use U+00B4 7.5,15.1 1,0.5
+glyph U+00DB adv=22.2   # latin capital letter u with circumflex
+use 85
+use U+02C6 6.3,15.1 1,0.5
+glyph U+00DC adv=22.2   # latin capital letter u with diaeresis
+use 85
+use U+00A8 5.9,15.1 1,0.5
+glyph U+00DD adv=21.2   # latin capital letter y with acute
+use 89
+use U+00B4 7,15.1 1,0.5
+glyph U+00E0 adv=16.2   # latin small letter a with grave
+use 97
+use U+0060 4,0.2
+glyph U+00E1 adv=16.2   # latin small letter a with acute
+use 97
+use U+00B4 4,0
+glyph U+00E2 adv=16.2   # latin small letter a with circumflex
+use 97
+use U+02C6 2.8,0
+glyph U+00E3 adv=16.2   # latin small letter a with tilde
+use 97
+use U+02DC 2.4,0
+glyph U+00E4 adv=16.2   # latin small letter a with diaeresis
+use 97
+use U+00A8 2.4,0
+glyph U+00E5 adv=16.2   # latin small letter a with ring above
+use 97
+use U+02DA 2.4,0
+glyph U+00E7 adv=14.6   # latin small letter c with cedilla
+use 99
+use U+00B8 4.5,0
+glyph U+00E8 adv=16.2   # latin small letter e with grave
+use 101
+use U+0060 4.5,0.2
+glyph U+00E9 adv=16.2   # latin small letter e with acute
+use 101
+use U+00B4 4.5,0
+glyph U+00EA adv=16.2   # latin small letter e with circumflex
+use 101
+use U+02C6 3.3,0
+glyph U+00EB adv=16.2   # latin small letter e with diaeresis
+use 101
+use U+00A8 2.9,0
+glyph U+00EC adv=11.2   # latin small letter i with grave
+use U+0131
+use U+0060 2,0.2
+glyph U+00ED adv=11.2   # latin small letter i with acute
+use U+0131
+use U+00B4 2,0
+glyph U+00EE adv=11.2   # latin small letter i with circumflex
+use U+0131
+use U+02C6 0.8,0
+glyph U+00EF adv=11.2   # latin small letter i with diaeresis
+use U+0131
+use U+00A8 0.4,0
+glyph U+00F1 adv=20.2   # latin small letter n with tilde
+use 110
+use U+02DC 4.9,0
+glyph U+00F2 adv=16.2   # latin small letter o with grave
+use 111
+use U+0060 4.5,0.2
+glyph U+00F3 adv=16.2   # latin small letter o with acute
+use 111
+use U+00B4 4.5,0
+glyph U+00F4 adv=16.2   # latin small letter o with circumflex
+use 111
+use U+02C6 3.3,0
+glyph U+00F5 adv=16.2   # latin small letter o with tilde
+use 111
+use U+02DC 2.9,0
+glyph U+00F6 adv=16.2   # latin small letter o with diaeresis
+use 111
+use U+00A8 2.9,0
+glyph U+00F9 adv=20.2   # latin small letter u with grave
+use 117
+use U+0060 6.5,0.2
+glyph U+00FA adv=20.2   # latin small letter u with acute
+use 117
+use U+00B4 6.5,0
+glyph U+00FB adv=20.2   # latin small letter u with circumflex
+use 117
+use U+02C6 5.3,0
+glyph U+00FC adv=20.2   # latin small letter u with diaeresis
+use 117
+use U+00A8 4.9,0
+glyph U+00FD adv=19.2   # latin small letter y with acute
+use 121
+use U+00B4 6,0
+glyph U+00FF adv=19.2   # latin small letter y with diaeresis
+use 121
+use U+00A8 4.4,0
+glyph U+0100 adv=23.2   # latin capital letter a with macron
+use 65
+use U+00AF 6.4,15.1 1,0.5
+glyph U+0101 adv=16.2   # latin small letter a with macron
+use 97
+use U+00AF 2.4,0
+glyph U+0102 adv=23.2   # latin capital letter a with breve
+use 65
+use U+02D8 6.6,15.1 1,0.5
+glyph U+0103 adv=16.2   # latin small letter a with breve
+use 97
+use U+02D8 2.6,0
+glyph U+0104 adv=23.2   # latin capital letter a with ogonek
+use 65
+use U+02DB 13.5,0
+glyph U+0105 adv=16.2   # latin small letter a with ogonek
+use 97
+use U+02DB 8.5,0
+glyph U+0106 adv=17.6   # latin capital letter c with acute
+use 67
+use U+00B4 6.5,15.1 1,0.5
+glyph U+0107 adv=14.6   # latin small letter c with acute
+use 99
+use U+00B4 4.5,0
+glyph U+0108 adv=17.6   # latin capital letter c with circumflex
+use 67
+use U+02C6 5.3,15.1 1,0.5
+glyph U+0109 adv=14.6   # latin small letter c with circumflex
+use 99
+use U+02C6 3.3,0
+glyph U+010A adv=17.6   # latin capital letter c with dot above
+use 67
+use U+02D9 7.5,15.1 1,0.5
+glyph U+010B adv=14.6   # latin small letter c with dot above
+use 99
+use U+02D9 5.5,0
+glyph U+010C adv=17.6   # latin capital letter c with caron
+use 67
+use U+02C7 5.3,15.1 1,0.5
+glyph U+010D adv=14.6   # latin small letter c with caron
+use 99
+use U+02C7 3.3,0
+glyph U+010E adv=20.2   # latin capital letter d with caron
+use 68
+use U+02C7 4.8,15.1 1,0.5
+glyph U+010F adv=21   # latin small letter d with caron
+use 100
+use 44 16.27,18.8 0.7,0.7
+glyph U+0112 adv=18.2   # latin capital letter e with macron
+use 69
+use U+00AF 4.4,15.1 1,0.5
+glyph U+0113 adv=16.2   # latin small letter e with macron
+use 101
+use U+00AF 2.9,0
+glyph U+0114 adv=18.2   # latin capital letter e with breve
+use 69
+use U+02D8 4.6,15.1 1,0.5
+glyph U+0115 adv=16.2   # latin small letter e with breve
+use 101
+use U+02D8 3.1,0
+glyph U+0116 adv=18.2   # latin capital letter e with dot above
+use 69
+use U+02D9 7,15.1 1,0.5
+glyph U+0117 adv=16.2   # latin small letter e with dot above
+use 101
+use U+02D9 5.5,0
+glyph U+0118 adv=18.2   # latin capital letter e with ogonek
+use 69
+use U+02DB 9,0
+glyph U+0119 adv=16.2   # latin small letter e with ogonek
+use 101
+use U+02DB 6.5,0
+glyph U+011A adv=18.2   # latin capital letter e with caron
+use 69
+use U+02C7 4.8,15.1 1,0.5
+glyph U+011B adv=16.2   # latin small letter e with caron
+use 101
+use U+02C7 3.3,0
+glyph U+011C adv=21.2   # latin capital letter g with circumflex
+use 71
+use U+02C6 5.3,15.1 1,0.5
+glyph U+011D adv=18.2   # latin small letter g with circumflex
+use 103
+use U+02C6 3.3,0
+glyph U+011E adv=21.2   # latin capital letter g with breve
+use 71
+use U+02D8 5.1,15.1 1,0.5
+glyph U+011F adv=18.2   # latin small letter g with breve
+use 103
+use U+02D8 3.1,0
+glyph U+0120 adv=21.2   # latin capital letter g with dot above
+use 71
+use U+02D9 7.5,15.1 1,0.5
+glyph U+0121 adv=18.2   # latin small letter g with dot above
+use 103
+use U+02D9 5.5,0
+glyph U+0122 adv=21.2   # latin capital letter g with cedilla
+use 71
+use 44 8.15,-4.7 0.5,0.5
+glyph U+0123 adv=18.2   # latin small letter g with cedilla
+use 103
+use 44 10.05,18.9 -0.5,-0.5
+glyph U+0124 adv=22.2   # latin capital letter h with circumflex
+use 72
+use U+02C6 6.3,15.1 1,0.5
+glyph U+0125 adv=20.2   # latin small letter h with circumflex
+use 104
+use U+02C6 6.3,0
+glyph U+0128 adv=11.2   # latin capital letter i with tilde
+use 73
+use U+02DC 0.4,15.1 1,0.5
+glyph U+0129 adv=11.2   # latin small letter i with tilde
+use U+0131
+use U+02DC 0.4,0
+glyph U+012A adv=11.2   # latin capital letter i with macron
+use 73
+use U+00AF 0.4,15.1 1,0.5
+glyph U+012B adv=11.2   # latin small letter i with macron
+use U+0131
+use U+00AF 0.4,0
+glyph U+012C adv=11.2   # latin capital letter i with breve
+use 73
+use U+02D8 0.6,15.1 1,0.5
+glyph U+012D adv=11.2   # latin small letter i with breve
+use U+0131
+use U+02D8 0.6,0
+glyph U+012E adv=11.2   # latin capital letter i with ogonek
+use 73
+use U+02DB 2.5,0
+glyph U+012F adv=11.2   # latin small letter i with ogonek
+use 105
+use U+02DB 2.5,0
+glyph U+0130 adv=11.2   # latin capital letter i with dot above
+use 73
+use U+02D9 3,15.1 1,0.5
+glyph U+0134 adv=17.2   # latin capital letter j with circumflex
+use 74
+use U+02C6 6.8,15.1 1,0.5
+glyph U+0135 adv=9.2   # latin small letter j with circumflex
+use U+0237
+use U+02C6 1.3,0
+glyph U+0136 adv=21.7   # latin capital letter k with cedilla
+use 75
+use 44 8.45,-4.7 0.5,0.5
+glyph U+0137 adv=18.7   # latin small letter k with cedilla
+use 107
+use 44 7.65,-4.7 0.5,0.5
+glyph U+0139 adv=17.2   # latin capital letter l with acute
+use 76
+use U+00B4 2,15.1 1,0.5
+glyph U+013A adv=12.7   # latin small letter l with acute
+use 108
+use U+00B4 5.5,15.1 1,0.5
+glyph U+013B adv=17.2   # latin capital letter l with cedilla
+use 76
+use 44 6.65,-4.7 0.5,0.5
+glyph U+013C adv=11.2   # latin small letter l with cedilla
+use 108
+use 44 3.65,-4.7 0.5,0.5
+glyph U+013D adv=17.2   # latin capital letter l with caron
+use 76
+use 44 9.27,18.8 0.7,0.7
+glyph U+013E adv=14   # latin small letter l with caron
+use 108
+use 44 8.27,18.8 0.7,0.7
+glyph U+0143 adv=22.2   # latin capital letter n with acute
+use 78
+use U+00B4 7.5,15.1 1,0.5
+glyph U+0144 adv=20.2   # latin small letter n with acute
+use 110
+use U+00B4 6.5,0
+glyph U+0145 adv=22.2   # latin capital letter n with cedilla
+use 78
+use 44 9.15,-4.7 0.5,0.5
+glyph U+0146 adv=20.2   # latin small letter n with cedilla
+use 110
+use 44 8.15,-4.7 0.5,0.5
+glyph U+0147 adv=22.2   # latin capital letter n with caron
+use 78
+use U+02C7 6.3,15.1 1,0.5
+glyph U+0148 adv=20.2   # latin small letter n with caron
+use 110
+use U+02C7 5.3,0
+glyph U+014C adv=20.2   # latin capital letter o with macron
+use 79
+use U+00AF 4.9,15.1 1,0.5
+glyph U+014D adv=16.2   # latin small letter o with macron
+use 111
+use U+00AF 2.9,0
+glyph U+014E adv=20.2   # latin capital letter o with breve
+use 79
+use U+02D8 5.1,15.1 1,0.5
+glyph U+014F adv=16.2   # latin small letter o with breve
+use 111
+use U+02D8 3.1,0
+glyph U+0150 adv=20.2   # latin capital letter o with double acute
+use 79
+use U+02DD 4.3,15.1 1,0.5
+glyph U+0151 adv=16.2   # latin small letter o with double acute
+use 111
+use U+02DD 2.3,0
+glyph U+0154 adv=21.2   # latin capital letter r with acute
+use 82
+use U+00B4 6,15.1 1,0.5
+glyph U+0155 adv=13.7   # latin small letter r with acute
+use 114
+use U+00B4 4,0
+glyph U+0156 adv=21.2   # latin capital letter r with cedilla
+use 82
+use 44 8.15,-4.7 0.5,0.5
+glyph U+0157 adv=13.7   # latin small letter r with cedilla
+use 114
+use 44 3.65,-4.7 0.5,0.5
+glyph U+0158 adv=21.2   # latin capital letter r with caron
+use 82
+use U+02C7 4.8,15.1 1,0.5
+glyph U+0159 adv=13.7   # latin small letter r with caron
+use 114
+use U+02C7 2.8,0
+glyph U+015A adv=16.2   # latin capital letter s with acute
+use 83
+use U+00B4 4.5,15.1 1,0.5
+glyph U+015B adv=14.2   # latin small letter s with acute
+use 115
+use U+00B4 3.5,0
+glyph U+015C adv=16.2   # latin capital letter s with circumflex
+use 83
+use U+02C6 3.3,15.1 1,0.5
+glyph U+015D adv=14.2   # latin small letter s with circumflex
+use 115
+use U+02C6 2.3,0
+glyph U+015E adv=16.2   # latin capital letter s with cedilla
+use 83
+use U+00B8 4.5,0
+glyph U+015F adv=14.2   # latin small letter s with cedilla
+use 115
+use U+00B8 3.5,0
+glyph U+0160 adv=16.2   # latin capital letter s with caron
+use 83
+use U+02C7 3.3,15.1 1,0.5
+glyph U+0161 adv=14.2   # latin small letter s with caron
+use 115
+use U+02C7 2.3,0
+glyph U+0162 adv=19.2   # latin capital letter t with cedilla
+use 84
+use U+00B8 6,0
+glyph U+0163 adv=12.7   # latin small letter t with cedilla
+use 116
+use U+00B8 4,0
+glyph U+0164 adv=19.2   # latin capital letter t with caron
+use 84
+use U+02C7 4.8,15.1 1,0.5
+glyph U+0165 adv=14.5   # latin small letter t with caron
+use 116
+use 44 8.77,20.4 0.7,0.7
+glyph U+0168 adv=22.2   # latin capital letter u with tilde
+use 85
+use U+02DC 5.9,15.1 1,0.5
+glyph U+0169 adv=20.2   # latin small letter u with tilde
+use 117
+use U+02DC 4.9,0
+glyph U+016A adv=22.2   # latin capital letter u with macron
+use 85
+use U+00AF 5.9,15.1 1,0.5
+glyph U+016B adv=20.2   # latin small letter u with macron
+use 117
+use U+00AF 4.9,0
+glyph U+016C adv=22.2   # latin capital letter u with breve
+use 85
+use U+02D8 6.1,15.1 1,0.5
+glyph U+016D adv=20.2   # latin small letter u with breve
+use 117
+use U+02D8 5.1,0
+glyph U+016E adv=22.2   # latin capital letter u with ring above
+use 85
+use U+02DA 5.9,2.2
+glyph U+016F adv=20.2   # latin small letter u with ring above
+use 117
+use U+02DA 4.9,0
+glyph U+0170 adv=22.2   # latin capital letter u with double acute
+use 85
+use U+02DD 5.3,15.1 1,0.5
+glyph U+0171 adv=20.2   # latin small letter u with double acute
+use 117
+use U+02DD 4.3,0
+glyph U+0172 adv=22.2   # latin capital letter u with ogonek
+use 85
+use U+02DB 9,0
+glyph U+0173 adv=20.2   # latin small letter u with ogonek
+use 117
+use U+02DB 11,0
+glyph U+0174 adv=30.2   # latin capital letter w with circumflex
+use 87
+use U+02C6 10.3,15.1 1,0.5
+glyph U+0175 adv=26.2   # latin small letter w with circumflex
+use 119
+use U+02C6 8.3,0
+glyph U+0176 adv=21.2   # latin capital letter y with circumflex
+use 89
+use U+02C6 5.8,15.1 1,0.5
+glyph U+0177 adv=19.2   # latin small letter y with circumflex
+use 121
+use U+02C6 4.8,0
+glyph U+0178 adv=21.2   # latin capital letter y with diaeresis
+use 89
+use U+00A8 5.4,15.1 1,0.5
+glyph U+0179 adv=16.2   # latin capital letter z with acute
+use 90
+use U+00B4 4.5,15.1 1,0.5
+glyph U+017A adv=14.2   # latin small letter z with acute
+use 122
+use U+00B4 3.5,0
+glyph U+017B adv=16.2   # latin capital letter z with dot above
+use 90
+use U+02D9 5.5,15.1 1,0.5
+glyph U+017C adv=14.2   # latin small letter z with dot above
+use 122
+use U+02D9 4.5,0
+glyph U+017D adv=16.2   # latin capital letter z with caron
+use 90
+use U+02C7 3.3,15.1 1,0.5
+glyph U+017E adv=14.2   # latin small letter z with caron
+use 122
+use U+02C7 2.3,0
+glyph U+0218 adv=16.2   # latin capital letter s with comma below
+use 83
+use 44 6.15,-4.7 0.5,0.5
+glyph U+0219 adv=14.2   # latin small letter s with comma below
+use 115
+use 44 5.15,-4.7 0.5,0.5
+glyph U+021A adv=19.2   # latin capital letter t with comma below
+use 84
+use 44 7.65,-4.7 0.5,0.5
+glyph U+021B adv=12.7   # latin small letter t with comma below
+use 116
+use 44 5.65,-4.7 0.5,0.5
+glyph U+03AA adv=11.2   # greek capital letter iota with dialytika
+use U+0399
+use U+00A8 0.4,15.1 1,0.5
+glyph U+03AB adv=21.2   # greek capital letter upsilon with dialytika
+use U+03A5
+use U+00A8 5.4,15.1 1,0.5
+glyph U+03AC adv=17.2   # greek small letter alpha with tonos
+use U+03B1
+use U+00B4 4.3,0
+glyph U+03AD adv=15.2   # greek small letter epsilon with tonos
+use U+03B5
+use U+00B4 4,0
+glyph U+03AE adv=20.2   # greek small letter eta with tonos
+use U+03B7
+use U+00B4 6.5,0
+glyph U+03AF adv=11.2   # greek small letter iota with tonos
+use U+03B9
+use U+00B4 2,0
+glyph U+03CA adv=11.2   # greek small letter iota with dialytika
+use U+03B9
+use U+00A8 0.4,0
+glyph U+03CB adv=20.2   # greek small letter upsilon with dialytika
+use U+03C5
+use U+00A8 4.9,0
+glyph U+03CC adv=16.2   # greek small letter omicron with tonos
+use U+03BF
+use U+00B4 4.5,0
+glyph U+03CD adv=20.2   # greek small letter upsilon with tonos
+use U+03C5
+use U+00B4 6.5,0
+glyph U+03CE adv=24.2   # greek small letter omega with tonos
+use U+03C9
+use U+00B4 8.5,0
+glyph U+0400 adv=18.2   # cyrillic capital letter ie with grave
+use U+0415
+use U+0060 6,15.2 1,0.5
+glyph U+0401 adv=18.2   # cyrillic capital letter io
+use U+0415
+use U+00A8 4.4,15.1 1,0.5
+glyph U+0403 adv=17.2   # cyrillic capital letter gje
+use U+0413
+use U+00B4 5,15.1 1,0.5
+glyph U+0407 adv=11.2   # cyrillic capital letter yi
+use U+0406
+use U+00A8 0.4,15.1 1,0.5
+glyph U+040C adv=21.7   # cyrillic capital letter kje
+use U+041A
+use U+00B4 6.5,15.1 1,0.5
+glyph U+040D adv=22.2   # cyrillic capital letter i with grave
+use U+0418
+use U+0060 7.5,15.2 1,0.5
+glyph U+040E adv=22.2   # cyrillic capital letter short u
+use U+0423
+use U+02D8 6.1,15.1 1,0.5
+glyph U+0419 adv=22.2   # cyrillic capital letter short i
+use U+0418
+use U+02D8 6.1,15.1 1,0.5
+glyph U+0439 adv=20.2   # cyrillic small letter short i
+use U+0438
+use U+02D8 5.1,0
+glyph U+0450 adv=16.2   # cyrillic small letter ie with grave
+use U+0435
+use U+0060 4.5,0.2
+glyph U+0451 adv=16.2   # cyrillic small letter io
+use U+0435
+use U+00A8 2.9,0
+glyph U+0453 adv=15.2   # cyrillic small letter gje
+use U+0433
+use U+00B4 4,0
+glyph U+0457 adv=11.2   # cyrillic small letter yi
+use U+0131
+use U+00A8 0.4,0
+glyph U+045C adv=18.7   # cyrillic small letter kje
+use U+043A
+use U+00B4 5.5,0
+glyph U+045D adv=20.2   # cyrillic small letter i with grave
+use U+0438
+use U+0060 6.5,0.2
+glyph U+045E adv=19.2   # cyrillic small letter short u
+use U+0443
+use U+02D8 4.6,0

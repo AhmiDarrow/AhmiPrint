@@ -3,7 +3,7 @@
 AhmiPrint is a typewriter and newspaper slab serif in Regular and Bold.
 It is drawn as strokes with round, ink-spread terminals and slab serifs, like a typewriter. Its proportional widths, tabular figures and large x-height come from newspaper text faces, so it stays readable at small sizes.
 
-Version 1.000. The public release is [v1.0.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.0.0).
+Version 1.100. The first public release is [v1.0.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.0.0).
 
 ![AhmiPrint specimen](specimen.png)
 
@@ -46,9 +46,17 @@ The zip on the [release](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1
 
 ## Characters
 
-Basic Latin, U+0020 through U+007E: the English uppercase and lowercase alphabets, digits, and the standard keyboard punctuation. 95 characters, each drawn in the stroke file. U+00A0 no-break space uses the same empty glyph as the space, so a line will not break there. No accented letters.
+584 characters in each weight, every one drawn from the stroke file:
 
-The drawing grid is 24 units tall: baseline 0, x-height 14, cap height 20, ascender 21, descender -6. Regular is stroke weight 2.6 and Bold is 3.8, both with round caps and round joins. Slab serifs are strokes of the same weight as the stems. The zero is slashed, and every figure has the same width so columns of numbers line up.
+- Basic Latin, Latin-1 Supplement and Latin Extended-A in full, plus Ș ș Ț ț, ƒ and the dotless j used under accents. That covers Western, Central and Northern European, Baltic, Turkish, Maltese, Welsh, Romanian and Esperanto.
+- Greek: the modern monotonic alphabet with tonos and dialytika.
+- Cyrillic: U+0400 to U+045F (Russian, Ukrainian, Belarusian, Bulgarian, Serbian, Macedonian) and Ґ ґ Ғ ғ Қ қ Ң ң Ү ү Ұ ұ Һ һ Ә ә Ө ө for Kazakh and Central Asian languages.
+- Punctuation and symbols: curly quotes, dashes, daggers, bullet, ellipsis, per mille, primes, angle quotes, ‼, fraction slash; € ₹ ₽ ₺ ₩ ₪ ₫ ₱ ₴ ₸ ₿; ™ №; arrows ← ↑ → ↓ ↔ ↕ ⇧; − ∞ √ ≈ ≠ ≤ ≥; the interface shapes ◻ ▲ ▼ ► ◄ ⏴ ⏵ ⏶ ⏷ ✓ ✗ ● ○.
+- Spaces: no-break, figure, punctuation, thin, hair and narrow no-break, each an empty glyph of its own width.
+
+Accented letters are composed. Each mark (acute, grave, circumflex, caron, breve, dot, ring, tilde, macron, diaeresis, double acute, cedilla, ogonek) is drawn once as its spacing character, and a letter is its base plus the mark, written as two `use` lines in the stroke file. Lowercase letters take the mark as drawn; capitals take it squashed to half height so it sits low over the cap. Greek and Cyrillic letters that look like Latin ones use the Latin drawing.
+
+The drawing grid is 24 units tall: baseline 0, x-height 14, cap height 20, ascender 21, descender -6. The em is 1000 units. The line box is ascent 1152 and descent 349, tall enough for the marks over capitals. Regular is stroke weight 2.6 and Bold is 3.8, both with round caps and round joins. Slab serifs are strokes of the same weight as the stems. Letters are proportional. The zero is slashed, and every figure, the figure space and the figure dash have the same width so columns of numbers line up.
 
 ## Changing a letter
 
