@@ -1,9 +1,9 @@
 # AhmiPrint
 
-AhmiPrint is a typewriter and newspaper slab serif in Regular and Bold.
+AhmiPrint is a typewriter and newspaper slab serif in five weights: Light, Semilight, Regular, Semibold and Bold.
 It is drawn as strokes with round, ink-spread terminals and slab serifs, like a typewriter. Its proportional widths, tabular figures and large x-height come from newspaper text faces, so it stays readable at small sizes.
 
-Version 1.110. The latest release is [v1.1.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.1.0) (font version 1.110).
+Version 1.200. The latest release is [v1.1.0](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.1.0) (font version 1.110).
 
 ![AhmiPrint specimen](specimen.png)
 
@@ -11,10 +11,10 @@ Version 1.110. The latest release is [v1.1.0](https://github.com/AhmiDarrow/Ahmi
 
 | Path | What it is |
 |---|---|
-| `fonts/` | Ready-to-use files: `AhmiPrint-Regular` and `AhmiPrint-Bold`, each as `.ttf`, `.otf` and `.woff2`. The `.ttf` and `.woff2` are hinted with ttfautohint (stems snap to whole pixels); the `.otf` carries PostScript hints from otfautohint |
+| `fonts/` | Ready-to-use files: `AhmiPrint-Light`, `-Semilight`, `-Regular`, `-Semibold` and `-Bold`, each as `.ttf`, `.otf` and `.woff2`. The `.ttf` and `.woff2` are hinted with ttfautohint (stems snap to whole pixels); the `.otf` carries PostScript hints from otfautohint |
 | `source/ahmi-print.strokes` | The source. Every character drawn as strokes on a 24-unit grid |
 | `build.py` | Turns the stroke file into the font files |
-| `check.py` | Checks advances, holes, tabular figures, and that both weights share one set of metrics |
+| `check.py` | Checks advances, holes, tabular figures, and that all five weights share one set of metrics and glyphs |
 | `specimen.html` | Open in a browser to see every character |
 | `LICENSE` | SIL Open Font License 1.1 |
 | `CHANGELOG.md` | Release history |
@@ -24,8 +24,23 @@ Version 1.110. The latest release is [v1.1.0](https://github.com/AhmiDarrow/Ahmi
 ```css
 @font-face {
   font-family: "AhmiPrint";
+  src: url("fonts/AhmiPrint-Light.woff2") format("woff2");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "AhmiPrint";
+  src: url("fonts/AhmiPrint-Semilight.woff2") format("woff2");
+  font-weight: 350;
+}
+@font-face {
+  font-family: "AhmiPrint";
   src: url("fonts/AhmiPrint-Regular.woff2") format("woff2");
   font-weight: 400;
+}
+@font-face {
+  font-family: "AhmiPrint";
+  src: url("fonts/AhmiPrint-Semibold.woff2") format("woff2");
+  font-weight: 600;
 }
 @font-face {
   font-family: "AhmiPrint";
@@ -40,7 +55,7 @@ The caps and descenders are tall for the size, so give body text a line height o
 
 ## Using it on the desktop
 
-Install `AhmiPrint-Regular.ttf` and `AhmiPrint-Bold.ttf` (or the two `.otf` files; install one format, not both). On Windows, select both files, right-click, and choose Install. On macOS, open them in Font Book and choose Install. The family name is AhmiPrint. Bold is the bold style of that family.
+Install the five `.ttf` files (or the five `.otf` files; install one format, not both). On Windows, select the files, right-click, and choose Install. On macOS, open them in Font Book and choose Install. The family name is AhmiPrint. Bold is the bold style of that family; Light, Semilight and Semibold show up as AhmiPrint Light, AhmiPrint Semilight and AhmiPrint Semibold in apps that list families the old way, and inside the one AhmiPrint family in apps that read typographic names (CSS, design tools).
 
 The zip on the [release](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1.1.0) has the `.ttf` and `.otf` files, the web fonts, this readme, the changelog, and the specimen.
 
@@ -56,7 +71,7 @@ The zip on the [release](https://github.com/AhmiDarrow/AhmiPrint/releases/tag/v1
 
 Accented letters are composed. Each mark (acute, grave, circumflex, caron, breve, dot, ring, tilde, macron, diaeresis, double acute, cedilla, ogonek) is drawn once as its spacing character, and a letter is its base plus the mark, written as two `use` lines in the stroke file. Lowercase letters take the mark as drawn; capitals take it squashed to half height so it sits low over the cap. Greek and Cyrillic letters that look like Latin ones use the Latin drawing.
 
-The drawing grid is 24 units tall: baseline 0, x-height 14, cap height 20, ascender 21, descender -6. The em is 1000 units. Line spacing is the same as in 1.000 and shared by both weights: ascent 1038, descent -329, no line gap, in both the hhea and the typo metrics, with USE_TYPO_METRICS set. Marks over capitals may rise above that ascent, as in most fonts. The Windows metrics (usWinAscent 1152, usWinDescent 349) cover every glyph, so nothing is clipped. Regular is stroke weight 2.6 and Bold is 3.8, both with round caps and round joins. Slab serifs are strokes of the same weight as the stems. Letters are proportional. The zero is slashed, and every figure, the figure space and the figure dash have the same width so columns of numbers line up.
+The drawing grid is 24 units tall: baseline 0, x-height 14, cap height 20, ascender 21, descender -6. The em is 1000 units. Line spacing is the same as in 1.000 and shared by every weight: ascent 1038, descent -329, no line gap, in both the hhea and the typo metrics, with USE_TYPO_METRICS set. Marks over capitals may rise above that ascent, as in most fonts. The Windows metrics (usWinAscent 1152, usWinDescent 349) cover every glyph, so nothing is clipped. The weights are stroke weights 1.75 (Light), 2.2 (Semilight), 2.6 (Regular), 3.15 (Semibold) and 3.8 (Bold), all with round caps and round joins. Slab serifs are strokes of the same weight as the stems. Letters are proportional. The zero is slashed, and every figure, the figure space and the figure dash have the same width so columns of numbers line up.
 
 ## Changing a letter
 
@@ -69,7 +84,7 @@ python build.py
 python check.py
 ```
 
-`build.py` expands every stroke to a filled outline, removes the overlaps, hints them, and writes the `.ttf`, `.woff2` and `.otf` files. Advance widths come from the stroke file and are the same in both weights.
+`build.py` expands every stroke to a filled outline, removes the overlaps, hints them, and writes the `.ttf`, `.woff2` and `.otf` files. Advance widths come from the stroke file and are the same in every weight.
 
 ## About
 
