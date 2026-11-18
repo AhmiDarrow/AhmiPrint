@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.200 — 2026-11-18
+
+Five weights, the same set as Remedy Sans UI. The font's own version string is 1.200.
+
+- New Light (300), Semilight (350) and Semibold (600), built from the same stroke file at stroke weights 1.75, 2.2 and 3.15. The steps between weights follow Remedy Sans UI's, scaled to this font's own Regular (2.6) to Bold (3.8) distance. Each comes as `.ttf` and `.woff2` (ttfautohint) and `.otf` (otfautohint), like Regular and Bold
+- Regular and Bold stay one style-linked family. The new weights carry their own legacy family name ("AhmiPrint Light" and so on) for old apps, and the typographic family AhmiPrint (name IDs 16 and 17) for apps that group by weight
+- All five weights share one line box, one underline and one glyph set; `check.py` checks every weight against Regular
+
 ## 1.110 — 2026-11-16 (release v1.1.0)
 
 Sharper on screen, an OpenType/CFF version, and cleaner joins. The font's own version string is 1.110. Advances, metrics and coverage are unchanged.

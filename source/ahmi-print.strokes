@@ -11,7 +11,7 @@
 #                            draw another character's strokes here, scaled by sx,sy
 #                            (negative mirrors) and then moved by dx,dy. Accented
 #                            letters are a base letter plus a mark, each drawn once.
-# Stroke weight comes from the renderer (regular 2.6, bold 3.8). Every terminal is round,
+# Stroke weight comes from the renderer (light 1.75, semilight 2.2, regular 2.6, semibold 3.15, bold 3.8). Every terminal is round,
 # like typewriter ink. Slab serifs are strokes of the same weight as the stems. Scaling a
 # drawing with `use` never scales the stroke.
 
